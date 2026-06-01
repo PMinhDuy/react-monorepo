@@ -1,0 +1,28 @@
+{
+  "files": [],
+  "include": [],
+  "references": [
+    {
+      "path": "../../libs/products"
+    },
+    {
+      "path": "../../libs/shared/graphql"
+    },
+    {
+      "path": "../../libs/orders"
+    },
+    {
+      "path": "../../libs/shared/ui"
+    },
+    {
+      "path": "../../libs/shared/auth"
+    },
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.spec.json"
+    }
+  ],
+  "extends": "../../tsconfig.base.json"
+}

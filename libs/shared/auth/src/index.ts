@@ -1,0 +1,5 @@
+export { useAuthStore } from './lib/auth-store'
+export { useAuth } from './lib/use-auth'
+export { ProtectedRoute } from './lib/protected-route'
+export { loginSchema, registerSchema } from './lib/auth-schemas'
+export type { LoginFormData, RegisterFormData } from './lib/auth-schemas'

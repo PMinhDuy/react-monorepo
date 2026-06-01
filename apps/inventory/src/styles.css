@@ -1,0 +1,12 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+@import "../../../libs/shared/ui/src/globals.css";
+@source "../../../libs/shared/ui/src/**/*.{ts,tsx}";
+@source "../../../libs/catalog/src/**/*.{ts,tsx}";
+
+@layer base {
+  html {
+    font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  }
+}

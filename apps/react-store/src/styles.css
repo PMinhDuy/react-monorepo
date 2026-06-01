@@ -1,0 +1,23 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,300;0,6..12,400;0,6..12,500;0,6..12,600;0,6..12,700;1,6..12,400&family=Rubik:wght@400;500;600;700&display=swap');
+
+@import "tailwindcss";
+@import "../../../libs/shared/ui/src/globals.css";
+@source "../../../libs/shared/ui/src/**/*.{ts,tsx}";
+@source "../../../libs/products/src/**/*.{ts,tsx}";
+@source "../../../libs/orders/src/**/*.{ts,tsx}";
+
+@layer base {
+  :root {
+    --primary: oklch(0.488 0.243 264.376);
+    --primary-foreground: oklch(0.985 0 0);
+    --ring: oklch(0.488 0.243 264.376);
+  }
+
+  html {
+    font-family: 'Nunito Sans', ui-sans-serif, system-ui, sans-serif;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: 'Rubik', ui-sans-serif, system-ui, sans-serif;
+  }
+}

@@ -1,0 +1,20 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "new-york",
+  "rsc": false,
+  "tsx": true,
+  "tailwind": {
+    "config": "",
+    "css": "libs/shared/ui/src/globals.css",
+    "baseColor": "zinc",
+    "cssVariables": true
+  },
+  "iconLibrary": "lucide",
+  "aliases": {
+    "components": "@react-monorepo/shared-ui",
+    "utils": "@react-monorepo/shared-ui/utils",
+    "ui": "@react-monorepo/shared-ui",
+    "lib": "@react-monorepo/shared-ui/lib",
+    "hooks": "@react-monorepo/shared-ui/hooks"
+  }
+}

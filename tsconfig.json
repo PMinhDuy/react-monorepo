@@ -1,0 +1,37 @@
+{
+  "extends": "./tsconfig.base.json",
+  "compileOnSave": false,
+  "files": [],
+  "references": [
+    {
+      "path": "./apps/react-store-e2e"
+    },
+    {
+      "path": "./apps/react-store"
+    },
+    {
+      "path": "./apps/inventory-e2e"
+    },
+    {
+      "path": "./apps/inventory"
+    },
+    {
+      "path": "./libs/products"
+    },
+    {
+      "path": "./libs/orders"
+    },
+    {
+      "path": "./libs/shared/ui"
+    },
+    {
+      "path": "./libs/shared/graphql"
+    },
+    {
+      "path": "./libs/shared/auth"
+    },
+    {
+      "path": "./libs/catalog"
+    }
+  ]
+}
