@@ -42,6 +42,8 @@ jobs:
         run: pnpm nx build inventory
         env:
           VITE_GRAPHQL_URL: ${{ secrets.VITE_GRAPHQL_URL }}
+          NX_NO_CLOUD: true
+          NX_DAEMON: false
 
       - name: Deploy to Cloudflare Pages
         uses: cloudflare/wrangler-action@v3
