@@ -8,6 +8,8 @@ import type {
   AddToCartMutationVariables,
   RemoveFromCartMutation,
   RemoveFromCartMutationVariables,
+  UpdateCartItemQuantityMutation,
+  UpdateCartItemQuantityMutationVariables,
 } from '@react-monorepo/shared-graphql'
 
 const GET_CART: TypedDocumentNode<GetMyCartQuery, GetMyCartQueryVariables> = gql`
@@ -38,12 +40,19 @@ const REMOVE_FROM_CART: TypedDocumentNode<RemoveFromCartMutation, RemoveFromCart
   }
 `
 
+const UPDATE_CART_ITEM: TypedDocumentNode<UpdateCartItemQuantityMutation, UpdateCartItemQuantityMutationVariables> = gql`
+  mutation UpdateCartItemQuantity($productId: ID!, $quantity: Int!) {
+    updateCartItemQuantity(productId: $productId, quantity: $quantity)
+  }
+`
+
 const refetchCart = { refetchQueries: [{ query: GET_CART }] }
 
 export function useCart() {
   const { data, loading } = useQuery(GET_CART)
   const [addToCartMutation] = useMutation(ADD_TO_CART, refetchCart)
   const [removeFromCartMutation] = useMutation(REMOVE_FROM_CART, refetchCart)
+  const [updateCartItemMutation] = useMutation(UPDATE_CART_ITEM, refetchCart)
 
   const items = data?.myCart?.items ?? []
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)
@@ -55,5 +64,8 @@ export function useCart() {
   const removeFromCart = (productId: string) =>
     removeFromCartMutation({ variables: { productId } })
 
-  return { items, itemCount, total, loading, addToCart, removeFromCart }
+  const updateQuantity = (productId: string, quantity: number) =>
+    updateCartItemMutation({ variables: { productId, quantity } })
+
+  return { items, itemCount, total, loading, addToCart, removeFromCart, updateQuantity }
 }

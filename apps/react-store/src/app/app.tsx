@@ -8,6 +8,9 @@ import { ProductsPage } from './pages/products-page'
 import { ProductDetailPage } from './pages/product-detail-page'
 import { CheckoutPage } from './pages/checkout-page'
 import { OrderSuccessPage } from './pages/order-success-page'
+import { OrdersPage } from './pages/orders-page'
+import { OrderDetailPage } from './pages/order-detail-page'
+import { ProfilePage } from './pages/profile-page'
 
 function Layout() {
   return (
@@ -39,7 +42,9 @@ export function App() {
           <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/checkout" element={<CheckoutPage />} />
           <Route path="/orders/success/:orderId" element={<OrderSuccessPage />} />
-          <Route path="/orders" element={<div className="p-8">My Orders (Phase 5)</div>} />
+          <Route path="/orders" element={<OrdersPage />} />
+          <Route path="/orders/:id" element={<OrderDetailPage />} />
+          <Route path="/profile" element={<ProfilePage />} />
         </Route>
       </Route>
 

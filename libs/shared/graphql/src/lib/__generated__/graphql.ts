@@ -267,6 +267,60 @@ export type RemoveCategoryMutationVariables = {
   id: string
 }
 
+// ─── Address queries / mutations ─────────────────────────────────────────────
+
+export type GetMyAddressesQuery = {
+  __typename?: 'Query'
+  myAddresses: Address[]
+}
+
+export type GetMyAddressesQueryVariables = Record<string, never>
+
+export type AddAddressMutation = {
+  __typename?: 'Mutation'
+  addAddress: Address
+}
+
+export type AddAddressMutationVariables = {
+  street: string
+  city: string
+  country: string
+  postalCode?: string | null
+  isDefault: boolean
+}
+
+export type UpdateAddressMutation = {
+  __typename?: 'Mutation'
+  updateAddress: Address
+}
+
+export type UpdateAddressMutationVariables = {
+  id: string
+  street?: string | null
+  city?: string | null
+  country?: string | null
+  postalCode?: string | null
+  isDefault?: boolean | null
+}
+
+export type RemoveAddressMutation = {
+  __typename?: 'Mutation'
+  removeAddress: boolean
+}
+
+export type RemoveAddressMutationVariables = {
+  id: string
+}
+
+export type SetDefaultAddressMutation = {
+  __typename?: 'Mutation'
+  setDefaultAddress: Address
+}
+
+export type SetDefaultAddressMutationVariables = {
+  id: string
+}
+
 // ─── Cart queries / mutations ─────────────────────────────────────────────────
 
 export type GetMyCartQuery = {
@@ -293,6 +347,16 @@ export type RemoveFromCartMutation = {
 
 export type RemoveFromCartMutationVariables = {
   productId: string
+}
+
+export type UpdateCartItemQuantityMutation = {
+  __typename?: 'Mutation'
+  updateCartItemQuantity: boolean
+}
+
+export type UpdateCartItemQuantityMutationVariables = {
+  productId: string
+  quantity: number
 }
 
 // ─── Order queries / mutations ────────────────────────────────────────────────
@@ -334,6 +398,18 @@ export type UpdateOrderStatusMutation = {
 export type UpdateOrderStatusMutationVariables = {
   id: string
   status: OrderStatus
+}
+
+export type GetOrdersQuery = {
+  __typename?: 'Query'
+  orders: Order[]
+}
+
+export type GetOrdersQueryVariables = {
+  status?: OrderStatus | null
+  userId?: string | null
+  limit?: number | null
+  offset?: number | null
 }
 
 // ─── User queries ─────────────────────────────────────────────────────────────

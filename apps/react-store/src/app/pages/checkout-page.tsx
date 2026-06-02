@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client/react'
 import { gql } from '@apollo/client'
 import type { TypedDocumentNode } from '@apollo/client'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, Link } from 'react-router-dom'
 import type {
   PlaceOrderMutation,
   PlaceOrderMutationVariables,
@@ -10,7 +10,7 @@ import type {
 } from '@react-monorepo/shared-graphql'
 import { useCart } from '@react-monorepo/orders'
 import { Button, Card, CardContent } from '@react-monorepo/shared-ui'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { MapPin } from 'lucide-react'
 
 // placeOrder takes a direct shippingAddressId arg, not an input object
@@ -41,10 +41,19 @@ export function CheckoutPage() {
   const { data: meData, loading: meLoading, error: meError } = useQuery(ME_QUERY)
   const [placeOrder, { loading: placing }] = useMutation(PLACE_ORDER)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
+  const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
 
   const addresses = meData?.me?.addresses ?? []
-  const shippingAddress =
-    addresses.find((a) => a.isDefault) ?? addresses[0] ?? null
+  const defaultAddress = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null
+
+  // Sync selectedAddressId when addresses load
+  useEffect(() => {
+    if (defaultAddress && !selectedAddressId) {
+      setSelectedAddressId(defaultAddress.id)
+    }
+  }, [defaultAddress, selectedAddressId])
+
+  const shippingAddress = addresses.find((a) => a.id === selectedAddressId) ?? defaultAddress
   const hasAddress = shippingAddress !== null
 
   const handlePlaceOrder = async () => {
@@ -101,6 +110,25 @@ export function CheckoutPage() {
         </div>
       )}
 
+      {/* Address selector */}
+      {!meLoading && !meError && addresses.length > 0 && (
+        <div className="mt-4">
+          <label className="block text-sm font-medium mb-1">Shipping address</label>
+          <select
+            className="w-full rounded-md border px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-primary/50"
+            value={selectedAddressId ?? ''}
+            onChange={(e) => setSelectedAddressId(e.target.value)}
+          >
+            {addresses.map((a) => (
+              <option key={a.id} value={a.id}>
+                {a.street}, {a.city}, {a.country}
+                {a.isDefault ? ' (default)' : ''}
+              </option>
+            ))}
+          </select>
+        </div>
+      )}
+
       {/* No address warning — shown before the place-order button */}
       {!meLoading && !meError && !hasAddress && (
         <div className="flex items-start gap-3 mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
@@ -108,8 +136,11 @@ export function CheckoutPage() {
           <div>
             <p className="font-medium">No shipping address on file</p>
             <p className="text-amber-700 mt-0.5">
-              Please add a shipping address to your profile before placing an order.
-              Address management is coming soon.
+              Please{' '}
+              <Link to="/profile" className="underline font-medium">
+                add a shipping address in your profile
+              </Link>{' '}
+              before placing an order.
             </p>
           </div>
         </div>

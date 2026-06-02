@@ -7,7 +7,7 @@ interface CartItemRowProps {
 }
 
 export function CartItemRow({ item }: CartItemRowProps) {
-  const { addToCart, removeFromCart } = useCart()
+  const { addToCart, removeFromCart, updateQuantity } = useCart()
 
   return (
     <div className="flex items-center gap-3">
@@ -27,7 +27,11 @@ export function CartItemRow({ item }: CartItemRowProps) {
           variant="outline"
           size="icon"
           className="h-7 w-7"
-          onClick={() => removeFromCart(item.productId)}
+          onClick={() =>
+            item.quantity <= 1
+              ? removeFromCart(item.productId)
+              : updateQuantity(item.productId, item.quantity - 1)
+          }
         >
           −
         </Button>

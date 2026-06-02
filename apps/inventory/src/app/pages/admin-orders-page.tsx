@@ -1,13 +1,12 @@
 import { useQuery } from '@apollo/client/react'
 import { gql } from '@apollo/client'
 import type { TypedDocumentNode } from '@apollo/client'
-import type { GetMyOrdersQuery, GetMyOrdersQueryVariables } from '@react-monorepo/shared-graphql'
+import type { GetOrdersQuery, GetOrdersQueryVariables } from '@react-monorepo/shared-graphql'
 import { OrderTable } from '@react-monorepo/catalog'
 
-// Backend exposes myOrders — no separate admin orders query exists
-const GET_MY_ORDERS: TypedDocumentNode<GetMyOrdersQuery, GetMyOrdersQueryVariables> = gql`
-  query GetAdminOrders {
-    myOrders {
+const GET_ORDERS: TypedDocumentNode<GetOrdersQuery, GetOrdersQueryVariables> = gql`
+  query GetAdminOrders($limit: Int, $offset: Int) {
+    orders(limit: $limit, offset: $offset) {
       id status totalAmount createdAt
       items { id productId quantity unitPrice }
     }
@@ -15,14 +14,16 @@ const GET_MY_ORDERS: TypedDocumentNode<GetMyOrdersQuery, GetMyOrdersQueryVariabl
 `
 
 export function AdminOrdersPage() {
-  const { data, loading } = useQuery(GET_MY_ORDERS)
-  const orders = data?.myOrders ?? []
+  const { data, loading } = useQuery(GET_ORDERS, {
+    variables: { limit: 50, offset: 0 },
+  })
+  const orders = data?.orders ?? []
 
   return (
     <div className="p-8 space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Orders</h1>
-        <p className="text-muted-foreground text-sm mt-1">View and manage customer orders</p>
+        <p className="text-muted-foreground text-sm mt-1">View and manage all customer orders</p>
       </div>
       {loading ? (
         <p className="text-muted-foreground text-sm animate-pulse">Loading…</p>
