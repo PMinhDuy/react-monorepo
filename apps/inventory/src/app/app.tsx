@@ -7,6 +7,8 @@ import { AdminProductsPage } from './pages/admin-products-page'
 import { ProductEditPage } from './pages/product-edit-page'
 import { AdminCategoriesPage } from './pages/admin-categories-page'
 import { AdminOrdersPage } from './pages/admin-orders-page'
+import { AdminCustomersPage } from './pages/admin-customers-page'
+import { CustomerDetailPage } from './pages/customer-detail-page'
 
 export function App() {
   return (
@@ -22,6 +24,8 @@ export function App() {
           <Route path="/products/:id/edit" element={<ProductEditPage />} />
           <Route path="/categories" element={<AdminCategoriesPage />} />
           <Route path="/orders" element={<AdminOrdersPage />} />
+          <Route path="/customers" element={<AdminCustomersPage />} />
+          <Route path="/customers/:id" element={<CustomerDetailPage />} />
         </Route>
       </Route>
 

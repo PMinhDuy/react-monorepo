@@ -43,6 +43,7 @@ export type User = {
   email: string
   name: string
   role: UserRole
+  isActive: boolean
   createdAt: string
   updatedAt: string
   addresses: Address[]
@@ -71,6 +72,7 @@ export type Product = {
   description?: string | null
   price: number
   stock: number
+  lowStockThreshold: number
   categoryId: string
   category: Category
   imageKeys: string[]
@@ -542,4 +544,147 @@ export type RequestUploadUrlMutation = {
 export type RequestUploadUrlMutationVariables = {
   filename: string
   contentType: string
+}
+
+// ─── Analytics types ──────────────────────────────────────────────────────────
+
+export type DashboardStats = {
+  __typename?: 'DashboardStats'
+  totalRevenue: number
+  revenueThisMonth: number
+  revenueLastMonth: number
+  totalOrders: number
+  pendingOrders: number
+  totalProducts: number
+  lowStockProducts: number
+  totalCustomers: number
+}
+
+export type RevenueDataPoint = {
+  __typename?: 'RevenueDataPoint'
+  date: string
+  revenue: number
+  orderCount: number
+}
+
+export type TopProduct = {
+  __typename?: 'TopProduct'
+  product: Product
+  totalSold: number
+  totalRevenue: number
+}
+
+export type CustomerProfile = {
+  __typename?: 'CustomerProfile'
+  user: User
+  totalOrders: number
+  totalSpent: number
+  lastOrderAt?: string | null
+}
+
+export type GetDashboardStatsQuery = {
+  __typename?: 'Query'
+  dashboardStats: DashboardStats
+}
+
+export type GetDashboardStatsQueryVariables = Record<string, never>
+
+export type GetRevenueChartQuery = {
+  __typename?: 'Query'
+  revenueChart: RevenueDataPoint[]
+}
+
+export type GetRevenueChartQueryVariables = {
+  days?: number | null
+}
+
+export type GetTopProductsQuery = {
+  __typename?: 'Query'
+  topProducts: TopProduct[]
+}
+
+export type GetTopProductsQueryVariables = {
+  limit?: number | null
+}
+
+export type GetLowStockProductsQuery = {
+  __typename?: 'Query'
+  lowStockProducts: Product[]
+}
+
+export type GetLowStockProductsQueryVariables = {
+  threshold?: number | null
+}
+
+export type GetCustomersQuery = {
+  __typename?: 'Query'
+  customers: CustomerProfile[]
+}
+
+export type GetCustomersQueryVariables = {
+  search?: string | null
+  limit?: number | null
+  offset?: number | null
+}
+
+export type GetCustomerQuery = {
+  __typename?: 'Query'
+  customer: CustomerProfile
+}
+
+export type GetCustomerQueryVariables = {
+  id: string
+}
+
+export type DeactivateUserMutation = {
+  __typename?: 'Mutation'
+  deactivateUser: User
+}
+
+export type DeactivateUserMutationVariables = {
+  id: string
+}
+
+export type BulkUpdateProductsMutation = {
+  __typename?: 'Mutation'
+  bulkUpdateProducts: number
+}
+
+export type BulkUpdateProductsMutationVariables = {
+  ids: string[]
+  isActive: boolean
+}
+
+export type BulkDeleteProductsMutation = {
+  __typename?: 'Mutation'
+  bulkDeleteProducts: number
+}
+
+export type BulkDeleteProductsMutationVariables = {
+  ids: string[]
+}
+
+export type GetAdminProductsQuery = {
+  __typename?: 'Query'
+  adminProducts: PaginatedProducts
+}
+
+export type GetAdminProductsQueryVariables = {
+  limit: number
+  offset: number
+  categoryId?: string | null
+  search?: string | null
+  sortBy?: string | null
+  sortOrder?: string | null
+}
+
+export type ExportOrdersQuery = {
+  __typename?: 'Query'
+  exportOrders: Order[]
+}
+
+export type ExportOrdersQueryVariables = {
+  startDate?: string | null
+  endDate?: string | null
+  status?: OrderStatus | null
 }

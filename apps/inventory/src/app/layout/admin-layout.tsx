@@ -1,13 +1,14 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '@react-monorepo/shared-auth'
 import { cn } from '@react-monorepo/shared-ui'
-import { LayoutDashboard, Package, FolderTree, ShoppingCart, LogOut, Store } from 'lucide-react'
+import { LayoutDashboard, Package, FolderTree, ShoppingCart, Users, LogOut, Store } from 'lucide-react'
 
 const navItems = [
   { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
   { to: '/products', label: 'Products', icon: Package },
   { to: '/categories', label: 'Categories', icon: FolderTree },
   { to: '/orders', label: 'Orders', icon: ShoppingCart },
+  { to: '/customers', label: 'Customers', icon: Users },
 ]
 
 export function AdminLayout() {

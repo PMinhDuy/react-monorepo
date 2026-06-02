@@ -1,5 +1,8 @@
 {
   "name": "@react-monorepo/inventory",
   "version": "0.0.1",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "recharts": "^3.8.1"
+  }
 }
