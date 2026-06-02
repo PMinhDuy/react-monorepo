@@ -45,6 +45,9 @@ const errorLink = onError((errCtx: any) => {
   const isUnauthenticated = graphQLErrors?.some((e) => e.extensions?.['code'] === 'UNAUTHENTICATED')
   if (!isUnauthenticated) return
 
+  // Prevent infinite retry: if this operation already went through a refresh attempt, bail out
+  if (operation.getContext()['_refreshed']) return
+
   return new Observable((observer) => {
     refreshAccessToken().then((newToken) => {
       if (!newToken) {
@@ -55,6 +58,7 @@ const errorLink = onError((errCtx: any) => {
       }
       operation.setContext(({ headers = {} }: { headers: Record<string, string> }) => ({
         headers: { ...headers, authorization: `Bearer ${newToken}` },
+        _refreshed: true,
       }))
       forward(operation).subscribe(observer)
     }).catch((err: unknown) => observer.error(err))
