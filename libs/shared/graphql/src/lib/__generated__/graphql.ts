@@ -14,11 +14,12 @@ export type Scalars = {
 
 // ─── Enums ───────────────────────────────────────────────────────────────────
 
-export type UserRole = 'ADMIN' | 'CUSTOMER'
+export type UserRole = 'admin' | 'user'
 
 export type OrderStatus =
   | 'PENDING'
   | 'CONFIRMED'
+  | 'PROCESSING'
   | 'SHIPPED'
   | 'DELIVERED'
   | 'CANCELLED'

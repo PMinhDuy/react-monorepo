@@ -1,4 +1,4 @@
-import { useMutation, useApolloClient } from '@apollo/client/react'
+import { useMutation, useQuery } from '@apollo/client/react'
 import { gql } from '@apollo/client'
 import type { TypedDocumentNode } from '@apollo/client'
 import { useNavigate } from 'react-router-dom'
@@ -11,6 +11,7 @@ import type {
 import { useCart } from '@react-monorepo/orders'
 import { Button, Card, CardContent } from '@react-monorepo/shared-ui'
 import { useState } from 'react'
+import { MapPin } from 'lucide-react'
 
 // placeOrder takes a direct shippingAddressId arg, not an input object
 const PLACE_ORDER: TypedDocumentNode<PlaceOrderMutation, PlaceOrderMutationVariables> = gql`
@@ -36,25 +37,21 @@ const ME_QUERY: TypedDocumentNode<MeQuery, MeQueryVariables> = gql`
 export function CheckoutPage() {
   const { items, total } = useCart()
   const navigate = useNavigate()
-  const client = useApolloClient()
-  const [placeOrder, { loading }] = useMutation(PLACE_ORDER)
+  // MeQuery type is a superset of this partial query — only `addresses` is accessed
+  const { data: meData, loading: meLoading, error: meError } = useQuery(ME_QUERY)
+  const [placeOrder, { loading: placing }] = useMutation(PLACE_ORDER)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
+  const addresses = meData?.me?.addresses ?? []
+  const shippingAddress =
+    addresses.find((a) => a.isDefault) ?? addresses[0] ?? null
+  const hasAddress = shippingAddress !== null
+
   const handlePlaceOrder = async () => {
+    if (!shippingAddress) return
     setErrorMsg(null)
     try {
-      // Fetch current user's addresses to get a valid shippingAddressId
-      const { data: meData } = await client.query({ query: ME_QUERY, fetchPolicy: 'network-only' })
-      const addresses = meData?.me?.addresses ?? []
-      const address =
-        addresses.find((a: { id: string; isDefault: boolean }) => a.isDefault) ?? addresses[0]
-
-      if (!address) {
-        setErrorMsg('No shipping address on file. Please contact support.')
-        return
-      }
-
-      const { data } = await placeOrder({ variables: { shippingAddressId: address.id } })
+      const { data } = await placeOrder({ variables: { shippingAddressId: shippingAddress.id } })
       if (data?.placeOrder) {
         navigate(`/orders/success/${data.placeOrder.id}`)
       }
@@ -96,10 +93,36 @@ export function CheckoutPage() {
         </CardContent>
       </Card>
 
+      {/* Network error loading addresses */}
+      {meError && (
+        <div className="flex items-start gap-3 mt-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+          <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+          <p>Could not load your addresses. Please refresh and try again.</p>
+        </div>
+      )}
+
+      {/* No address warning — shown before the place-order button */}
+      {!meLoading && !meError && !hasAddress && (
+        <div className="flex items-start gap-3 mt-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <MapPin className="h-4 w-4 mt-0.5 shrink-0" />
+          <div>
+            <p className="font-medium">No shipping address on file</p>
+            <p className="text-amber-700 mt-0.5">
+              Please add a shipping address to your profile before placing an order.
+              Address management is coming soon.
+            </p>
+          </div>
+        </div>
+      )}
+
       {errorMsg && <p className="text-sm text-destructive mt-4">{errorMsg}</p>}
 
-      <Button className="w-full mt-6" disabled={loading} onClick={handlePlaceOrder}>
-        {loading ? 'Placing order…' : 'Place Order'}
+      <Button
+        className="w-full mt-6"
+        disabled={placing || meLoading || !hasAddress || !!meError}
+        onClick={handlePlaceOrder}
+      >
+        {placing ? 'Placing order…' : meLoading ? 'Loading…' : 'Place Order'}
       </Button>
     </div>
   )

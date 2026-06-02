@@ -27,14 +27,16 @@ const UPDATE_ORDER_STATUS: TypedDocumentNode<
 const ORDER_STATUSES: OrderStatus[] = [
   'PENDING',
   'CONFIRMED',
+  'PROCESSING',
   'SHIPPED',
   'DELIVERED',
   'CANCELLED',
 ]
 
-const statusStyles: Record<string, string> = {
+const statusStyles: Record<OrderStatus, string> = {
   PENDING: 'bg-amber-50 text-amber-700 border-amber-200',
   CONFIRMED: 'bg-blue-50 text-blue-700 border-blue-200',
+  PROCESSING: 'bg-purple-50 text-purple-700 border-purple-200',
   SHIPPED: 'bg-indigo-50 text-indigo-700 border-indigo-200',
   DELIVERED: 'bg-emerald-50 text-emerald-700 border-emerald-200',
   CANCELLED: 'bg-red-50 text-red-700 border-red-200',
@@ -45,7 +47,7 @@ interface OrderTableProps {
 }
 
 export function OrderTable({ orders }: OrderTableProps) {
-  const [updateStatus] = useMutation(UPDATE_ORDER_STATUS)
+  const [updateStatus, { error: updateError }] = useMutation(UPDATE_ORDER_STATUS)
 
   if (orders.length === 0) {
     return (
@@ -60,7 +62,12 @@ export function OrderTable({ orders }: OrderTableProps) {
   }
 
   return (
-    <div className="overflow-x-auto">
+    <div className="overflow-x-auto space-y-2">
+      {updateError && (
+        <p className="text-xs text-destructive px-1">
+          Status update failed: {updateError.message}
+        </p>
+      )}
       <table className="w-full text-sm">
         <thead>
           <tr className="border-b text-left text-muted-foreground bg-muted/30">
