@@ -14,3 +14,4 @@ export {
 } from './lib/sheet'
 export { Navbar } from './lib/navbar'
 export { Pagination } from './lib/pagination'
+export { SeoHead } from './lib/seo-head'

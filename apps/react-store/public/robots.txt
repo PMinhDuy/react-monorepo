@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Allow: /products
+Allow: /products/*
+Disallow: /checkout
+Disallow: /orders
+Disallow: /profile
+Disallow: /wishlist
+
+Sitemap: https://shop.example.com/sitemap.xml

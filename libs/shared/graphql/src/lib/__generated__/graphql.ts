@@ -52,6 +52,7 @@ export type User = {
 export type AuthPayload = {
   __typename?: 'AuthPayload'
   accessToken: string
+  refreshToken: string
   user: User
 }
 
@@ -687,4 +688,22 @@ export type ExportOrdersQueryVariables = {
   startDate?: string | null
   endDate?: string | null
   status?: OrderStatus | null
+}
+
+export type RefreshTokenMutation = {
+  __typename?: 'Mutation'
+  refreshToken: AuthPayload
+}
+
+export type RefreshTokenMutationVariables = {
+  token: string
+}
+
+export type CreateCheckoutSessionMutation = {
+  __typename?: 'Mutation'
+  createCheckoutSession: string
+}
+
+export type CreateCheckoutSessionMutationVariables = {
+  orderId: string
 }

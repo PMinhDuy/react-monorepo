@@ -1,9 +1,12 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useSearchParams } from 'react-router-dom'
 import { Button } from '@react-monorepo/shared-ui'
-import { CheckCircle2, Package, ArrowRight } from 'lucide-react'
+import { CheckCircle2, Package, ArrowRight, CreditCard } from 'lucide-react'
 
 export function OrderSuccessPage() {
   const { orderId } = useParams<{ orderId: string }>()
+  const [searchParams] = useSearchParams()
+  const sessionId = searchParams.get('session_id')
+  const paidViaStripe = !!sessionId
 
   return (
     <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
@@ -14,11 +17,22 @@ export function OrderSuccessPage() {
       </div>
 
       <div className="space-y-2">
-        <h1 className="text-3xl font-bold tracking-tight">Order Placed!</h1>
+        <h1 className="text-3xl font-bold tracking-tight">
+          {paidViaStripe ? 'Payment Successful!' : 'Order Placed!'}
+        </h1>
         <p className="text-muted-foreground">
-          Thank you! Your order has been confirmed and is being processed.
+          {paidViaStripe
+            ? 'Your payment was processed successfully. Your order is now confirmed.'
+            : 'Thank you! Your order has been confirmed and is being processed.'}
         </p>
       </div>
+
+      {paidViaStripe && (
+        <div className="flex items-center justify-center gap-2 text-sm text-emerald-700 bg-emerald-50 rounded-lg px-4 py-2 border border-emerald-200">
+          <CreditCard className="h-4 w-4 shrink-0" />
+          Payment verified by Stripe
+        </div>
+      )}
 
       <div className="bg-muted/40 rounded-xl px-4 py-3 flex items-center gap-3 text-left border">
         <Package className="h-5 w-5 text-muted-foreground shrink-0" />

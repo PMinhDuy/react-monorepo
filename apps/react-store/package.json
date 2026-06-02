@@ -1,5 +1,8 @@
 {
   "name": "@react-monorepo/react-store",
   "version": "0.0.1",
-  "private": true
+  "private": true,
+  "dependencies": {
+    "react-helmet-async": "^3.0.0"
+  }
 }

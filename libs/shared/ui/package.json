@@ -11,5 +11,8 @@
     },
     "./globals.css": "./src/globals.css",
     "./package.json": "./package.json"
+  },
+  "dependencies": {
+    "react-helmet-async": "^3.0.0"
   }
 }

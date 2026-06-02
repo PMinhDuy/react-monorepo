@@ -20,6 +20,9 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
             src={product.imageUrls?.[0] ?? 'https://placehold.co/400x300?text=No+Image'}
             alt={product.name}
             className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-xl"
+            loading="lazy"
+            width={400}
+            height={300}
           />
         </Link>
         <WishlistButton

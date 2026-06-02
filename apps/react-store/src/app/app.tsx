@@ -1,19 +1,32 @@
+import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom'
 import { Heart } from 'lucide-react'
 import { ProtectedRoute } from '@react-monorepo/shared-auth'
 import { Navbar } from '@react-monorepo/shared-ui'
 import { CartBadge, CartDrawer } from '@react-monorepo/orders'
 import { useWishlist } from '@react-monorepo/products'
+
+// Always loaded (above-fold, critical)
 import { LoginPage } from './pages/login-page'
 import { RegisterPage } from './pages/register-page'
 import { ProductsPage } from './pages/products-page'
-import { ProductDetailPage } from './pages/product-detail-page'
-import { CheckoutPage } from './pages/checkout-page'
-import { OrderSuccessPage } from './pages/order-success-page'
-import { OrdersPage } from './pages/orders-page'
-import { OrderDetailPage } from './pages/order-detail-page'
-import { ProfilePage } from './pages/profile-page'
-import { WishlistPage } from './pages/wishlist-page'
+
+// Lazy loaded (below-fold or gated)
+const ProductDetailPage = lazy(() => import('./pages/product-detail-page').then(m => ({ default: m.ProductDetailPage })))
+const CheckoutPage = lazy(() => import('./pages/checkout-page').then(m => ({ default: m.CheckoutPage })))
+const OrderSuccessPage = lazy(() => import('./pages/order-success-page').then(m => ({ default: m.OrderSuccessPage })))
+const OrdersPage = lazy(() => import('./pages/orders-page').then(m => ({ default: m.OrdersPage })))
+const OrderDetailPage = lazy(() => import('./pages/order-detail-page').then(m => ({ default: m.OrderDetailPage })))
+const ProfilePage = lazy(() => import('./pages/profile-page').then(m => ({ default: m.ProfilePage })))
+const WishlistPage = lazy(() => import('./pages/wishlist-page').then(m => ({ default: m.WishlistPage })))
+
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="h-8 w-8 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+    </div>
+  )
+}
 
 function WishlistBadge() {
   const { wishlistIds } = useWishlist()
@@ -44,31 +57,33 @@ function Layout() {
 
 export function App() {
   return (
-    <Routes>
-      {/* Public auth routes (no navbar) */}
-      <Route path="/login" element={<LoginPage />} />
-      <Route path="/register" element={<RegisterPage />} />
+    <Suspense fallback={<PageLoader />}>
+      <Routes>
+        {/* Public auth routes (no navbar) */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
-      {/* App shell with Navbar + CartDrawer */}
-      <Route element={<Layout />}>
-        {/* Public browsing routes */}
-        <Route path="/products" element={<ProductsPage />} />
-        <Route path="/products/:id" element={<ProductDetailPage />} />
+        {/* App shell with Navbar + CartDrawer */}
+        <Route element={<Layout />}>
+          {/* Public browsing routes */}
+          <Route path="/products" element={<ProductsPage />} />
+          <Route path="/products/:id" element={<ProductDetailPage />} />
 
-        {/* Protected routes */}
-        <Route element={<ProtectedRoute />}>
-          <Route path="/" element={<Navigate to="/products" replace />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/orders/success/:orderId" element={<OrderSuccessPage />} />
-          <Route path="/orders" element={<OrdersPage />} />
-          <Route path="/orders/:id" element={<OrderDetailPage />} />
-          <Route path="/profile" element={<ProfilePage />} />
-          <Route path="/wishlist" element={<WishlistPage />} />
+          {/* Protected routes */}
+          <Route element={<ProtectedRoute />}>
+            <Route path="/" element={<Navigate to="/products" replace />} />
+            <Route path="/checkout" element={<CheckoutPage />} />
+            <Route path="/orders/success/:orderId" element={<OrderSuccessPage />} />
+            <Route path="/orders" element={<OrdersPage />} />
+            <Route path="/orders/:id" element={<OrderDetailPage />} />
+            <Route path="/profile" element={<ProfilePage />} />
+            <Route path="/wishlist" element={<WishlistPage />} />
+          </Route>
         </Route>
-      </Route>
 
-      <Route path="*" element={<Navigate to="/products" replace />} />
-    </Routes>
+        <Route path="*" element={<Navigate to="/products" replace />} />
+      </Routes>
+    </Suspense>
   )
 }
 

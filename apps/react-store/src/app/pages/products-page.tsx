@@ -1,6 +1,7 @@
 import { useSearchParams } from 'react-router-dom'
 import { ProductGrid, CategoryFilter, SearchBar, SortSelect } from '@react-monorepo/products'
 import { useCart, useCartUIStore } from '@react-monorepo/orders'
+import { SeoHead } from '@react-monorepo/shared-ui'
 
 export function ProductsPage() {
   const [params, setParams] = useSearchParams()
@@ -28,6 +29,7 @@ export function ProductsPage() {
 
   return (
     <div className="container mx-auto px-4 py-8 space-y-6">
+      <SeoHead title="Shop Products" description="Browse our full catalog — great prices on electronics, clothing, and more." />
       <h1 className="text-3xl font-bold">Products</h1>
 
       <div className="flex flex-col sm:flex-row gap-3">

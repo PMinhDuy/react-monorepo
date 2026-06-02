@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client/react'
 import { gql } from '@apollo/client'
 import type { TypedDocumentNode } from '@apollo/client'
-import { useNavigate, Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import type {
   PlaceOrderMutation,
   PlaceOrderMutationVariables,
@@ -25,6 +25,12 @@ const PLACE_ORDER: TypedDocumentNode<PlaceOrderMutation, PlaceOrderMutationVaria
   }
 `
 
+const CREATE_CHECKOUT_SESSION = gql`
+  mutation CreateCheckoutSession($orderId: ID!) {
+    createCheckoutSession(orderId: $orderId)
+  }
+`
+
 const ME_QUERY: TypedDocumentNode<MeQuery, MeQueryVariables> = gql`
   query MeForCheckout {
     me {
@@ -36,17 +42,20 @@ const ME_QUERY: TypedDocumentNode<MeQuery, MeQueryVariables> = gql`
 
 export function CheckoutPage() {
   const { items, total } = useCart()
-  const navigate = useNavigate()
-  // MeQuery type is a superset of this partial query — only `addresses` is accessed
+  const [searchParams] = useSearchParams()
+  const wasCancelled = searchParams.get('cancelled') === 'true'
   const { data: meData, loading: meLoading, error: meError } = useQuery(ME_QUERY)
   const [placeOrder, { loading: placing }] = useMutation(PLACE_ORDER)
+  const [createCheckoutSession, { loading: redirecting }] = useMutation<
+    { createCheckoutSession: string },
+    { orderId: string }
+  >(CREATE_CHECKOUT_SESSION)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
 
   const addresses = meData?.me?.addresses ?? []
   const defaultAddress = addresses.find((a) => a.isDefault) ?? addresses[0] ?? null
 
-  // Sync selectedAddressId when addresses load
   useEffect(() => {
     if (defaultAddress && !selectedAddressId) {
       setSelectedAddressId(defaultAddress.id)
@@ -60,14 +69,20 @@ export function CheckoutPage() {
     if (!shippingAddress) return
     setErrorMsg(null)
     try {
-      const { data } = await placeOrder({ variables: { shippingAddressId: shippingAddress.id } })
-      if (data?.placeOrder) {
-        navigate(`/orders/success/${data.placeOrder.id}`)
+      const { data: orderData } = await placeOrder({ variables: { shippingAddressId: shippingAddress.id } })
+      const orderId = orderData?.placeOrder?.id
+      if (!orderId) return
+
+      const { data: sessionData } = await createCheckoutSession({ variables: { orderId } })
+      if (sessionData?.createCheckoutSession) {
+        window.location.href = sessionData.createCheckoutSession
       }
     } catch (err) {
       setErrorMsg(err instanceof Error ? err.message : 'Failed to place order.')
     }
   }
+
+  const isSubmitting = placing || redirecting
 
   if (items.length === 0) {
     return (
@@ -83,6 +98,11 @@ export function CheckoutPage() {
   return (
     <div className="container mx-auto px-4 py-8 max-w-lg">
       <h1 className="text-2xl font-bold mb-6">Checkout</h1>
+      {wasCancelled && (
+        <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          Payment was cancelled. Your order is saved — try again when ready.
+        </div>
+      )}
 
       <Card>
         <CardContent className="p-6 space-y-3">
@@ -150,10 +170,10 @@ export function CheckoutPage() {
 
       <Button
         className="w-full mt-6"
-        disabled={placing || meLoading || !hasAddress || !!meError}
+        disabled={isSubmitting || meLoading || !hasAddress || !!meError}
         onClick={handlePlaceOrder}
       >
-        {placing ? 'Placing order…' : meLoading ? 'Loading…' : 'Place Order'}
+        {placing ? 'Placing order…' : redirecting ? 'Redirecting to payment…' : meLoading ? 'Loading…' : 'Place Order & Pay'}
       </Button>
     </div>
   )

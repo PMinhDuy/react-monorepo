@@ -15,6 +15,7 @@ const LOGIN_MUTATION: TypedDocumentNode<LoginMutation, LoginMutationVariables> =
   mutation Login($email: String!, $password: String!) {
     login(input: { email: $email, password: $password }) {
       accessToken
+      refreshToken
       user { id email name role }
     }
   }
@@ -24,6 +25,7 @@ const REGISTER_MUTATION: TypedDocumentNode<RegisterMutation, RegisterMutationVar
   mutation Register($name: String!, $email: String!, $password: String!) {
     register(input: { name: $name, email: $email, password: $password }) {
       accessToken
+      refreshToken
       user { id email name role }
     }
   }
@@ -40,14 +42,14 @@ export function useAuth() {
   const login = async (email: string, password: string) => {
     const { data } = await loginMutation({ variables: { email, password } })
     if (data?.login) {
-      setAuth(data.login.accessToken, data.login.user.id)
+      setAuth(data.login.accessToken, data.login.refreshToken, data.login.user.id)
     }
   }
 
   const register = async (input: { name: string; email: string; password: string }) => {
     const { data } = await registerMutation({ variables: input })
     if (data?.register) {
-      setAuth(data.register.accessToken, data.register.user.id)
+      setAuth(data.register.accessToken, data.register.refreshToken, data.register.user.id)
     }
   }
 

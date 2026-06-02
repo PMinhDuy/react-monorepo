@@ -5,7 +5,8 @@ import type { TypedDocumentNode } from '@apollo/client'
 import type { GetProductQuery, GetProductQueryVariables } from '@react-monorepo/shared-graphql'
 import { Button, Badge } from '@react-monorepo/shared-ui'
 import { useCart, useCartUIStore } from '@react-monorepo/orders'
-import { RelatedProducts, ReviewList, StarRating } from '@react-monorepo/products'
+import { RelatedProducts, ReviewList, StarRating, ProductStructuredData } from '@react-monorepo/products'
+import { SeoHead } from '@react-monorepo/shared-ui'
 import { ShoppingCart, ChevronLeft } from 'lucide-react'
 
 const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> = gql`
@@ -63,9 +64,25 @@ export function ProductDetailPage() {
   }
 
   const { product } = data
+  const firstImage = (product.imageUrls ?? [])[0]
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <SeoHead
+        title={product.name}
+        description={product.description ?? undefined}
+        image={firstImage}
+        type="product"
+      />
+      <ProductStructuredData
+        name={product.name}
+        description={product.description}
+        price={product.price}
+        image={firstImage}
+        averageRating={product.averageRating}
+        reviewCount={product.reviewCount}
+        sku={product.id}
+      />
       <Link
         to="/products"
         className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
@@ -76,9 +93,12 @@ export function ProductDetailPage() {
 
       <div className="grid md:grid-cols-2 gap-10">
         <img
-          src={(product.imageUrls ?? [])[0] ?? 'https://placehold.co/600x400?text=No+Image'}
+          src={firstImage ?? 'https://placehold.co/600x400?text=No+Image'}
           alt={product.name}
           className="rounded-2xl w-full object-cover shadow-sm border"
+          loading="eager"
+          width={600}
+          height={400}
         />
         <div className="space-y-5 py-2">
           {product.category?.name && (
