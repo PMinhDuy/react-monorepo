@@ -78,6 +78,9 @@ export type Product = {
   isActive: boolean
   createdAt: string
   updatedAt: string
+  relatedProducts?: Product[] | null
+  averageRating?: number | null
+  reviewCount?: number | null
 }
 
 export type CartItem = {
@@ -126,6 +129,98 @@ export type PaginatedProducts = {
   items: Product[]
   total: number
   hasMore: boolean
+}
+
+// ─── Review types ────────────────────────────────────────────────────────────
+
+export type Review = {
+  __typename?: 'Review'
+  id: string
+  userId: string
+  productId: string
+  orderId: string
+  rating: number
+  comment?: string | null
+  createdAt: string
+  updatedAt: string
+}
+
+export type GetProductReviewsQuery = {
+  __typename?: 'Query'
+  productReviews: Review[]
+}
+
+export type GetProductReviewsQueryVariables = {
+  productId: string
+  limit?: number | null
+  offset?: number | null
+}
+
+export type CreateReviewMutation = {
+  __typename?: 'Mutation'
+  createReview: Review
+}
+
+export type CreateReviewMutationVariables = {
+  productId: string
+  orderId: string
+  rating: number
+  comment?: string | null
+}
+
+export type UpdateReviewMutation = {
+  __typename?: 'Mutation'
+  updateReview: Review
+}
+
+export type UpdateReviewMutationVariables = {
+  id: string
+  rating: number
+  comment?: string | null
+}
+
+export type DeleteReviewMutation = {
+  __typename?: 'Mutation'
+  deleteReview: boolean
+}
+
+export type DeleteReviewMutationVariables = {
+  id: string
+}
+
+// ─── Wishlist types ───────────────────────────────────────────────────────────
+
+export type WishlistItem = {
+  __typename?: 'WishlistItem'
+  id: string
+  userId: string
+  productId: string
+  createdAt: string
+}
+
+export type GetMyWishlistQuery = {
+  __typename?: 'Query'
+  myWishlist: Product[]
+}
+
+export type GetMyWishlistQueryVariables = Record<string, never>
+
+export type AddToWishlistMutation = {
+  __typename?: 'Mutation'
+  addToWishlist: boolean
+}
+
+export type AddToWishlistMutationVariables = {
+  productId: string
+}
+
+export type RemoveFromWishlistMutation = {
+  __typename?: 'Mutation'
+  removeFromWishlist: boolean
+}
+
+export type RemoveFromWishlistMutationVariables = {
+  productId: string
 }
 
 // ─── Auth mutations ───────────────────────────────────────────────────────────
@@ -398,6 +493,15 @@ export type UpdateOrderStatusMutation = {
 export type UpdateOrderStatusMutationVariables = {
   id: string
   status: OrderStatus
+}
+
+export type CancelMyOrderMutation = {
+  __typename?: 'Mutation'
+  cancelMyOrder: Order
+}
+
+export type CancelMyOrderMutationVariables = {
+  id: string
 }
 
 export type GetOrdersQuery = {

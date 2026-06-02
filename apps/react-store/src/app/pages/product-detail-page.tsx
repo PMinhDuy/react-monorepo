@@ -5,6 +5,7 @@ import type { TypedDocumentNode } from '@apollo/client'
 import type { GetProductQuery, GetProductQueryVariables } from '@react-monorepo/shared-graphql'
 import { Button, Badge } from '@react-monorepo/shared-ui'
 import { useCart, useCartUIStore } from '@react-monorepo/orders'
+import { RelatedProducts, ReviewList, StarRating } from '@react-monorepo/products'
 import { ShoppingCart, ChevronLeft } from 'lucide-react'
 
 const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> = gql`
@@ -12,6 +13,8 @@ const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> 
     product(id: $id) {
       id name description price imageUrls
       category { id name }
+      averageRating reviewCount
+      relatedProducts(limit: 4) { id name price imageUrls }
     }
   }
 `
@@ -85,6 +88,14 @@ export function ProductDetailPage() {
           )}
           <h1 className="text-3xl font-bold tracking-tight leading-tight">{product.name}</h1>
           <p className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</p>
+          {(product.reviewCount ?? 0) > 0 && (
+            <div className="flex items-center gap-2">
+              <StarRating value={product.averageRating ?? 0} size="sm" />
+              <span className="text-sm text-muted-foreground">
+                {(product.averageRating ?? 0).toFixed(1)} ({product.reviewCount} review{product.reviewCount !== 1 ? 's' : ''})
+              </span>
+            </div>
+          )}
           <p className="text-muted-foreground leading-relaxed">{product.description}</p>
           <Button size="lg" className="gap-2" onClick={handleAddToCart}>
             <ShoppingCart className="h-5 w-5" />
@@ -92,6 +103,16 @@ export function ProductDetailPage() {
           </Button>
         </div>
       </div>
+
+      <RelatedProducts
+        products={product.relatedProducts ?? []}
+        onAddToCart={async (productId) => {
+          await addToCart(productId, 1)
+          openCart()
+        }}
+      />
+
+      <ReviewList productId={product.id} />
     </div>
   )
 }

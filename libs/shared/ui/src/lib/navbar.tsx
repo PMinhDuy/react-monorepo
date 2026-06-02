@@ -7,9 +7,10 @@ import { ShoppingBag } from 'lucide-react'
 
 interface NavbarProps {
   cartSlot?: ReactNode
+  wishlistSlot?: ReactNode
 }
 
-export function Navbar({ cartSlot }: NavbarProps) {
+export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
   const accessToken = useAuthStore((s) => s.accessToken)
   const clearAuth = useAuthStore((s) => s.clearAuth)
 
@@ -67,6 +68,7 @@ export function Navbar({ cartSlot }: NavbarProps) {
               </NavLink>
             </>
           )}
+          {wishlistSlot}
           {cartSlot}
           {accessToken ? (
             <Button variant="ghost" size="sm" onClick={clearAuth} className="ml-1">
