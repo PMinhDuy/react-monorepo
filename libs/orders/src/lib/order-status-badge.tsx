@@ -9,6 +9,8 @@ const STATUS_STYLES: Record<OrderStatus, string> = {
   SHIPPED: 'bg-indigo-50 text-indigo-700 border-indigo-200',
   DELIVERED: 'bg-green-50 text-green-700 border-green-200',
   CANCELLED: 'bg-red-50 text-red-600 border-red-200',
+  AWAITING_PAYMENT: 'bg-amber-50 text-amber-700 border-amber-200',
+  PAYMENT_FAILED: 'bg-red-50 text-red-700 border-red-200',
 }
 
 interface OrderStatusBadgeProps {
@@ -21,7 +23,7 @@ export function OrderStatusBadge({ status }: OrderStatusBadgeProps) {
       variant="outline"
       className={cn('capitalize text-xs font-medium', STATUS_STYLES[status])}
     >
-      {status.toLowerCase()}
+      {status.toLowerCase().replace(/_/g, ' ')}
     </Badge>
   )
 }

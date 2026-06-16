@@ -8,6 +8,8 @@ import type {
   GetMyOrderQueryVariables,
   CancelMyOrderMutation,
   CancelMyOrderMutationVariables,
+  CreateCheckoutSessionMutation,
+  CreateCheckoutSessionMutationVariables,
 } from '@react-monorepo/shared-graphql'
 import { Card, CardContent, Button } from '@react-monorepo/shared-ui'
 import { OrderStatusBadge } from '@react-monorepo/orders'
@@ -39,7 +41,16 @@ const CANCEL_MY_ORDER: TypedDocumentNode<CancelMyOrderMutation, CancelMyOrderMut
   }
 `
 
-const CANCELLABLE = new Set(['PENDING', 'CONFIRMED'])
+const CREATE_CHECKOUT_SESSION: TypedDocumentNode<
+  CreateCheckoutSessionMutation,
+  CreateCheckoutSessionMutationVariables
+> = gql`
+  mutation CreateCheckoutSessionFromDetail($orderId: ID!) {
+    createCheckoutSession(orderId: $orderId)
+  }
+`
+
+const CANCELLABLE = new Set(['PENDING', 'AWAITING_PAYMENT', 'CONFIRMED'])
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
@@ -52,7 +63,20 @@ export function OrderDetailPage() {
   const [cancelOrder, { loading: cancelling }] = useMutation(CANCEL_MY_ORDER, {
     refetchQueries: [{ query: GET_MY_ORDER, variables: { id: id! } }],
   })
+  const [createCheckoutSession, { loading: redirecting }] = useMutation(CREATE_CHECKOUT_SESSION)
   const order = data?.myOrder
+
+  const handleRetryPayment = async () => {
+    if (!id) return
+    try {
+      const { data: sessionData } = await createCheckoutSession({ variables: { orderId: id } })
+      if (sessionData?.createCheckoutSession) {
+        window.location.href = sessionData.createCheckoutSession
+      }
+    } catch (err) {
+      console.error('Failed to create checkout session', err)
+    }
+  }
 
   const handleCancel = async () => {
     setCancelError(null)
@@ -126,6 +150,23 @@ export function OrderDetailPage() {
               Keep order
             </Button>
           </div>
+        </div>
+      )}
+
+      {order.status === 'PAYMENT_FAILED' && (
+        <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4 flex items-center justify-between">
+          <div>
+            <p className="text-sm font-medium text-red-800">Payment failed</p>
+            <p className="text-xs text-red-600 mt-0.5">Your payment was not completed. You can retry below.</p>
+          </div>
+          <Button
+            size="sm"
+            disabled={redirecting}
+            onClick={handleRetryPayment}
+            className="bg-red-600 hover:bg-red-700 text-white shrink-0"
+          >
+            {redirecting ? 'Redirecting…' : 'Pay Now'}
+          </Button>
         </div>
       )}
 

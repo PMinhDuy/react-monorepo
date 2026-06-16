@@ -53,7 +53,7 @@ const UPDATE_PRODUCT: TypedDocumentNode<
     $price: Float
     $stock: Int
     $categoryId: ID
-    $imageKeys: [String]
+    $imageKeys: [String!]
     $isActive: Boolean
   ) {
     updateProduct(id: $id, input: {
