@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { useQuery, useApolloClient, gql } from '@apollo/client'
+import { useQuery, useApolloClient } from '@apollo/client/react'
+import { gql } from '@apollo/client'
 import { Button } from '@react-monorepo/shared-ui'
 import { CheckCircle2, Package, ArrowRight, CreditCard, Loader2, XCircle, Clock } from 'lucide-react'
 
