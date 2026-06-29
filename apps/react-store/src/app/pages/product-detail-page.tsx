@@ -1,13 +1,22 @@
-import { useParams, Link } from 'react-router-dom'
+import { useState } from 'react'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@apollo/client/react'
 import { gql } from '@apollo/client'
 import type { TypedDocumentNode } from '@apollo/client'
 import type { GetProductQuery, GetProductQueryVariables } from '@react-monorepo/shared-graphql'
 import { Button, Badge } from '@react-monorepo/shared-ui'
 import { useCart, useCartUIStore } from '@react-monorepo/orders'
-import { RelatedProducts, ReviewList, StarRating, ProductStructuredData } from '@react-monorepo/products'
+import {
+  RelatedProducts,
+  ReviewList,
+  StarRating,
+  ProductStructuredData,
+  WishlistButton,
+  ImageGallery,
+  QuantitySelector,
+} from '@react-monorepo/products'
 import { SeoHead } from '@react-monorepo/shared-ui'
-import { ShoppingCart, ChevronLeft } from 'lucide-react'
+import { ShoppingCart, Zap, ChevronLeft } from 'lucide-react'
 
 const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> = gql`
   query GetProduct($id: ID!) {
@@ -22,27 +31,51 @@ const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> 
 
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { data, loading } = useQuery(GET_PRODUCT, { variables: { id: id! } })
   const { addToCart } = useCart()
   const openCart = useCartUIStore((s) => s.openCart)
+  const [quantity, setQuantity] = useState(1)
 
   const handleAddToCart = async () => {
     if (!id) return
-    await addToCart(id, 1)
+    await addToCart(id, quantity)
     openCart()
+  }
+
+  const handleBuyNow = async () => {
+    if (!id) return
+    try {
+      await addToCart(id, quantity)
+    } catch {
+      // ProtectedRoute on /checkout will redirect unauthenticated users to /login
+    }
+    navigate('/checkout')
   }
 
   if (loading) {
     return (
       <div className="container mx-auto px-4 py-8 max-w-5xl">
+        <div className="h-4 bg-muted rounded w-48 mb-6 animate-pulse" />
         <div className="grid md:grid-cols-2 gap-10 animate-pulse">
-          <div className="h-96 bg-muted rounded-2xl" />
+          <div className="flex flex-col gap-3">
+            <div className="aspect-square bg-muted rounded-2xl" />
+            <div className="flex gap-2">
+              {[0, 1, 2].map((i) => (
+                <div key={i} className="h-16 w-16 bg-muted rounded-lg flex-shrink-0" />
+              ))}
+            </div>
+          </div>
           <div className="space-y-4 py-2">
             <div className="h-3 bg-muted rounded w-1/4" />
             <div className="h-8 bg-muted rounded w-3/4" />
             <div className="h-7 bg-muted rounded w-1/4" />
             <div className="h-24 bg-muted rounded" />
-            <div className="h-11 bg-muted rounded w-44" />
+            <div className="h-9 bg-muted rounded w-32" />
+            <div className="flex gap-3">
+              <div className="h-11 bg-muted rounded flex-1" />
+              <div className="h-11 bg-muted rounded flex-1" />
+            </div>
           </div>
         </div>
       </div>
@@ -64,7 +97,8 @@ export function ProductDetailPage() {
   }
 
   const { product } = data
-  const firstImage = (product.imageUrls ?? [])[0]
+  const images = product.imageUrls ?? []
+  const firstImage = images[0]
 
   return (
     <div className="container mx-auto px-4 py-8 max-w-5xl">
@@ -83,44 +117,69 @@ export function ProductDetailPage() {
         reviewCount={product.reviewCount}
         sku={product.id}
       />
-      <Link
-        to="/products"
-        className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-foreground transition-colors mb-6"
+
+      <nav
+        className="flex items-center gap-1.5 text-sm text-muted-foreground mb-6"
+        aria-label="Breadcrumb"
       >
-        <ChevronLeft className="h-4 w-4" />
-        Back to Products
-      </Link>
+        <Link to="/products" className="hover:text-foreground transition-colors">
+          Products
+        </Link>
+        <span>/</span>
+        <span className="text-foreground/60 line-clamp-1">{product.category?.name}</span>
+        <span>/</span>
+        <span className="text-foreground font-medium line-clamp-1">{product.name}</span>
+      </nav>
 
       <div className="grid md:grid-cols-2 gap-10">
-        <img
-          src={firstImage ?? 'https://placehold.co/600x400?text=No+Image'}
-          alt={product.name}
-          className="rounded-2xl w-full object-cover shadow-sm border"
-          loading="eager"
-          width={600}
-          height={400}
-        />
+        <ImageGallery images={images} alt={product.name} />
+
         <div className="space-y-5 py-2">
           {product.category?.name && (
             <Badge variant="secondary" className="font-normal">
               {product.category.name}
             </Badge>
           )}
-          <h1 className="text-3xl font-bold tracking-tight leading-tight">{product.name}</h1>
+
+          <div className="flex items-start justify-between gap-3">
+            <h1 className="text-3xl font-bold tracking-tight leading-tight">{product.name}</h1>
+            <WishlistButton productId={product.id} className="mt-1 flex-shrink-0" />
+          </div>
+
           <p className="text-3xl font-bold text-primary">${product.price.toFixed(2)}</p>
+
           {(product.reviewCount ?? 0) > 0 && (
             <div className="flex items-center gap-2">
               <StarRating value={product.averageRating ?? 0} size="sm" />
               <span className="text-sm text-muted-foreground">
-                {(product.averageRating ?? 0).toFixed(1)} ({product.reviewCount} review{product.reviewCount !== 1 ? 's' : ''})
+                {(product.averageRating ?? 0).toFixed(1)} · {product.reviewCount}{' '}
+                {product.reviewCount !== 1 ? 'reviews' : 'review'}
               </span>
             </div>
           )}
+
           <p className="text-muted-foreground leading-relaxed">{product.description}</p>
-          <Button size="lg" className="gap-2" onClick={handleAddToCart}>
-            <ShoppingCart className="h-5 w-5" />
-            Add to Cart
-          </Button>
+
+          <div className="flex items-center gap-3">
+            <span className="text-sm font-medium">Quantity</span>
+            <QuantitySelector value={quantity} onChange={setQuantity} />
+          </div>
+
+          <div className="flex gap-3 flex-wrap">
+            <Button size="lg" className="flex-1 gap-2 min-w-[140px]" onClick={handleAddToCart}>
+              <ShoppingCart className="h-5 w-5" />
+              Add to Cart
+            </Button>
+            <Button
+              size="lg"
+              variant="secondary"
+              className="flex-1 gap-2 min-w-[140px]"
+              onClick={handleBuyNow}
+            >
+              <Zap className="h-5 w-5" />
+              Buy Now
+            </Button>
+          </div>
         </div>
       </div>
 
