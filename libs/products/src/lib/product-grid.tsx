@@ -1,21 +1,9 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type { GetProductsQuery, GetProductsQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetProductsDocument } from '@react-monorepo/shared-graphql'
 import { Pagination } from '@react-monorepo/shared-ui'
 import { ProductCard } from './product-card'
 import { ProductSkeleton } from './product-skeleton'
-
-const GET_PRODUCTS: TypedDocumentNode<GetProductsQuery, GetProductsQueryVariables> = gql`
-  query GetProducts($limit: Int!, $offset: Int!, $categoryId: ID, $search: String, $sortBy: String, $sortOrder: String) {
-    products(limit: $limit, offset: $offset, categoryId: $categoryId, search: $search, sortBy: $sortBy, sortOrder: $sortOrder) {
-      items { id name description price imageUrls category { id name } }
-      total
-      hasMore
-    }
-  }
-`
 
 const PAGE_SIZE = 12
 
@@ -39,7 +27,7 @@ export function ProductGrid({ categoryId, search, sortBy, sortOrder, onAddToCart
     setLastFiltersKey(filtersKey)
   }
 
-  const { data, loading } = useQuery(GET_PRODUCTS, {
+  const { data, loading } = useQuery(GetProductsDocument, {
     variables: { limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE, categoryId, search: search || null, sortBy: sortBy || null, sortOrder: sortOrder || null },
   })
 

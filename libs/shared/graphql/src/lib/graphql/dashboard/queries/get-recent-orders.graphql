@@ -1,0 +1,1 @@
+query GetRecentOrders($limit: Int) { orders(limit: $limit, offset: 0) { id status totalAmount createdAt } }

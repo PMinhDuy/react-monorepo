@@ -1,0 +1,10 @@
+query GetAdminProductsPage($limit: Int!, $offset: Int!, $search: String, $sortBy: String, $sortOrder: String) {
+    adminProducts(limit: $limit, offset: $offset, search: $search, sortBy: $sortBy, sortOrder: $sortOrder) {
+      items {
+        id name price stock lowStockThreshold isActive imageUrls
+        category { id name }
+      }
+      total
+      hasMore
+    }
+  }

@@ -1,0 +1,1 @@
+mutation DeactivateUser($id: ID!) { deactivateUser(id: $id) { id isActive } }

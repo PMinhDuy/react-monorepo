@@ -1,28 +1,9 @@
 import { useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetMyOrdersQuery,
-  UpdateOrderStatusMutation,
-  UpdateOrderStatusMutationVariables,
-  OrderStatus,
-} from '@react-monorepo/shared-graphql'
+import { GetMyOrdersQuery, OrderStatus, UpdateOrderStatusDocument } from '@react-monorepo/shared-graphql'
 import { cn } from '@react-monorepo/shared-ui'
 import { ShoppingCart } from 'lucide-react'
 
 type Order = GetMyOrdersQuery['myOrders'][number]
-
-const UPDATE_ORDER_STATUS: TypedDocumentNode<
-  UpdateOrderStatusMutation,
-  UpdateOrderStatusMutationVariables
-> = gql`
-  mutation UpdateOrderStatus($id: ID!, $status: OrderStatus!) {
-    updateOrderStatus(id: $id, status: $status) {
-      id
-      status
-    }
-  }
-`
 
 const ORDER_STATUSES: OrderStatus[] = [
   'PENDING',
@@ -47,7 +28,7 @@ interface OrderTableProps {
 }
 
 export function OrderTable({ orders }: OrderTableProps) {
-  const [updateStatus, { error: updateError }] = useMutation(UPDATE_ORDER_STATUS)
+  const [updateStatus, { error: updateError }] = useMutation(UpdateOrderStatusDocument)
 
   if (orders.length === 0) {
     return (

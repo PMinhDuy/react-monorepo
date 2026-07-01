@@ -1,0 +1,6 @@
+query ExportOrders($startDate: String, $endDate: String, $status: OrderStatus) {
+    exportOrders(startDate: $startDate, endDate: $endDate, status: $status) {
+      id userId status totalAmount createdAt
+      items { productId quantity unitPrice }
+    }
+  }

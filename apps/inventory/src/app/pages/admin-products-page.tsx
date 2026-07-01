@@ -1,25 +1,10 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type { GetAdminProductsQuery, GetAdminProductsQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetAdminProductsPageDocument } from '@react-monorepo/shared-graphql'
 import { Button, Input, Pagination } from '@react-monorepo/shared-ui'
 import { Link } from 'react-router-dom'
 import { ProductTable } from '@react-monorepo/catalog'
 import { Plus, Search, X } from 'lucide-react'
-
-const GET_PRODUCTS: TypedDocumentNode<GetAdminProductsQuery, GetAdminProductsQueryVariables> = gql`
-  query GetAdminProductsPage($limit: Int!, $offset: Int!, $search: String, $sortBy: String, $sortOrder: String) {
-    adminProducts(limit: $limit, offset: $offset, search: $search, sortBy: $sortBy, sortOrder: $sortOrder) {
-      items {
-        id name price stock lowStockThreshold isActive imageUrls
-        category { id name }
-      }
-      total
-      hasMore
-    }
-  }
-`
 
 const PAGE_SIZE = 20
 
@@ -28,7 +13,7 @@ export function AdminProductsPage() {
   const [search, setSearch] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
 
-  const { data, refetch } = useQuery(GET_PRODUCTS, {
+  const { data, refetch } = useQuery(GetAdminProductsPageDocument, {
     variables: { limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE, search: search || undefined },
   })
 

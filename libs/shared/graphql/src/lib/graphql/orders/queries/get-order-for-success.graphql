@@ -1,0 +1,3 @@
+query GetOrderForSuccess($id: ID!) {
+    myOrder(id: $id) { id status }
+  }

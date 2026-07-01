@@ -1,0 +1,3 @@
+query GetCategories {
+    categories { id name parent { id } }
+  }

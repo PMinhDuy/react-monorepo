@@ -1,36 +1,10 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useLazyQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetOrdersQuery,
-  GetOrdersQueryVariables,
-  ExportOrdersQuery,
-  ExportOrdersQueryVariables,
-  OrderStatus,
-} from '@react-monorepo/shared-graphql'
+import { ExportOrdersDocument, GetAdminOrdersDocument, OrderStatus } from '@react-monorepo/shared-graphql'
 import { Button } from '@react-monorepo/shared-ui'
 import { OrderTable } from '@react-monorepo/catalog'
 import { downloadCsv } from '@react-monorepo/catalog'
 import { Download } from 'lucide-react'
-
-const GET_ORDERS: TypedDocumentNode<GetOrdersQuery, GetOrdersQueryVariables> = gql`
-  query GetAdminOrders($limit: Int, $offset: Int) {
-    orders(limit: $limit, offset: $offset) {
-      id status totalAmount createdAt
-      items { id productId quantity unitPrice }
-    }
-  }
-`
-
-const EXPORT_ORDERS: TypedDocumentNode<ExportOrdersQuery, ExportOrdersQueryVariables> = gql`
-  query ExportOrders($startDate: String, $endDate: String, $status: OrderStatus) {
-    exportOrders(startDate: $startDate, endDate: $endDate, status: $status) {
-      id userId status totalAmount createdAt
-      items { productId quantity unitPrice }
-    }
-  }
-`
 
 const STATUS_OPTIONS: { label: string; value: OrderStatus | '' }[] = [
   { label: 'All', value: '' },
@@ -47,11 +21,11 @@ export function AdminOrdersPage() {
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
-  const { data, loading } = useQuery(GET_ORDERS, {
+  const { data, loading } = useQuery(GetAdminOrdersDocument, {
     variables: { limit: 50, offset: 0 },
   })
 
-  const [exportOrders, { loading: exporting, data: exportData }] = useLazyQuery(EXPORT_ORDERS)
+  const [exportOrders, { loading: exporting, data: exportData }] = useLazyQuery(ExportOrdersDocument)
   const exportedRef = useRef<typeof exportData>(undefined)
 
   useEffect(() => {

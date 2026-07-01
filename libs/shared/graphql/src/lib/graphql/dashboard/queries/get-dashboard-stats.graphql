@@ -1,0 +1,4 @@
+query GetDashboardStats { dashboardStats {
+    totalRevenue revenueThisMonth revenueLastMonth
+    totalOrders pendingOrders totalProducts lowStockProducts totalCustomers
+  }}

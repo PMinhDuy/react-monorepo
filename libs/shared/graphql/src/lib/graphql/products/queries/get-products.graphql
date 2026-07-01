@@ -1,0 +1,7 @@
+query GetProducts($limit: Int!, $offset: Int!, $categoryId: ID, $search: String, $sortBy: String, $sortOrder: String) {
+    products(limit: $limit, offset: $offset, categoryId: $categoryId, search: $search, sortBy: $sortBy, sortOrder: $sortOrder) {
+      items { id name description price imageUrls category { id name } }
+      total
+      hasMore
+    }
+  }

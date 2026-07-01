@@ -1,26 +1,15 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type { GetCustomersQuery, GetCustomersQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetCustomersDocument } from '@react-monorepo/shared-graphql'
 import { Input } from '@react-monorepo/shared-ui'
 import { CustomerTable } from '@react-monorepo/catalog'
 import { Search, X } from 'lucide-react'
-
-const GET_CUSTOMERS: TypedDocumentNode<GetCustomersQuery, GetCustomersQueryVariables> = gql`
-  query GetCustomers($search: String, $limit: Int, $offset: Int) {
-    customers(search: $search, limit: $limit, offset: $offset) {
-      totalOrders totalSpent lastOrderAt
-      user { id email name role isActive createdAt updatedAt addresses { id street city country postalCode isDefault createdAt } }
-    }
-  }
-`
 
 export function AdminCustomersPage() {
   const [search, setSearch] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
 
-  const { data, loading } = useQuery(GET_CUSTOMERS, {
+  const { data, loading } = useQuery(GetCustomersDocument, {
     variables: { search: search || undefined, limit: 50, offset: 0 },
   })
 

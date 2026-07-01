@@ -1,0 +1,1 @@
+query GetLowStockDashboard { lowStockProducts { id name stock lowStockThreshold } }

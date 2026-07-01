@@ -3,17 +3,9 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type { GetCategoriesQuery, GetCategoriesQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetCategoriesForFormDocument } from '@react-monorepo/shared-graphql'
 import { Button, Input } from '@react-monorepo/shared-ui'
 import { useS3Upload } from './use-s3-upload'
-
-const GET_CATEGORIES: TypedDocumentNode<GetCategoriesQuery, GetCategoriesQueryVariables> = gql`
-  query GetCategoriesForForm {
-    categories { id name }
-  }
-`
 
 const productSchema = z.object({
   name: z.string().min(1, 'Required'),
@@ -42,7 +34,7 @@ export function ProductForm({ defaultValues, onSubmit, loading }: ProductFormPro
   )
   const fileRef = useRef<HTMLInputElement>(null)
 
-  const { data: catData } = useQuery(GET_CATEGORIES)
+  const { data: catData } = useQuery(GetCategoriesForFormDocument)
   const categories = catData?.categories ?? []
 
   const {

@@ -1,0 +1,5 @@
+mutation UpdateCategory($id: ID!, $name: String, $description: String, $isActive: Boolean) {
+    updateCategory(id: $id, input: { name: $name, description: $description, isActive: $isActive }) {
+      id name parent { id }
+    }
+  }

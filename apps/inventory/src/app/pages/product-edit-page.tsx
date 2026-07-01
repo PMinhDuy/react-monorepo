@@ -1,85 +1,22 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetProductQuery,
-  GetProductQueryVariables,
-  CreateProductMutation,
-  CreateProductMutationVariables,
-  UpdateProductMutation,
-  UpdateProductMutationVariables,
-} from '@react-monorepo/shared-graphql'
+import { CreateProductDocument, GetProductForEditDocument, UpdateProductDocument } from '@react-monorepo/shared-graphql'
 import { ProductForm, type ProductFormData } from '@react-monorepo/catalog'
 
-const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> = gql`
-  query GetProductForEdit($id: ID!) {
-    product(id: $id) { id name description price stock imageUrls category { id name } }
-  }
-`
-
 // NestJS Lambda — inline input objects with scalar vars (no named input types)
-const CREATE_PRODUCT: TypedDocumentNode<
-  CreateProductMutation,
-  CreateProductMutationVariables
-> = gql`
-  mutation CreateProduct(
-    $name: String!
-    $description: String
-    $price: Float!
-    $stock: Int!
-    $categoryId: ID!
-    $imageKeys: [String!]!
-  ) {
-    createProduct(input: {
-      name: $name
-      description: $description
-      price: $price
-      stock: $stock
-      categoryId: $categoryId
-      imageKeys: $imageKeys
-    }) { id name }
-  }
-`
-
-const UPDATE_PRODUCT: TypedDocumentNode<
-  UpdateProductMutation,
-  UpdateProductMutationVariables
-> = gql`
-  mutation UpdateProduct(
-    $id: ID!
-    $name: String
-    $description: String
-    $price: Float
-    $stock: Int
-    $categoryId: ID
-    $imageKeys: [String!]
-    $isActive: Boolean
-  ) {
-    updateProduct(id: $id, input: {
-      name: $name
-      description: $description
-      price: $price
-      stock: $stock
-      categoryId: $categoryId
-      imageKeys: $imageKeys
-      isActive: $isActive
-    }) { id name }
-  }
-`
 
 export function ProductEditPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const isEdit = !!id
 
-  const { data } = useQuery(GET_PRODUCT, {
+  const { data } = useQuery(GetProductForEditDocument, {
     variables: { id: id! },
     skip: !isEdit,
   })
 
-  const [createProduct, { loading: creating }] = useMutation(CREATE_PRODUCT)
-  const [updateProduct, { loading: updating }] = useMutation(UPDATE_PRODUCT)
+  const [createProduct, { loading: creating }] = useMutation(CreateProductDocument)
+  const [updateProduct, { loading: updating }] = useMutation(UpdateProductDocument)
 
   const handleSubmit = async (formData: ProductFormData & { imageKeys: string[] }) => {
     if (isEdit) {

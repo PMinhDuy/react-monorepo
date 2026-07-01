@@ -1,0 +1,20 @@
+mutation UpdateProduct(
+    $id: ID!
+    $name: String
+    $description: String
+    $price: Float
+    $stock: Int
+    $categoryId: ID
+    $imageKeys: [String!]
+    $isActive: Boolean
+  ) {
+    updateProduct(id: $id, input: {
+      name: $name
+      description: $description
+      price: $price
+      stock: $stock
+      categoryId: $categoryId
+      imageKeys: $imageKeys
+      isActive: $isActive
+    }) { id name }
+  }

@@ -1,0 +1,6 @@
+query GetMyOrdersForReview {
+    myOrders {
+      id status
+      items { productId }
+    }
+  }

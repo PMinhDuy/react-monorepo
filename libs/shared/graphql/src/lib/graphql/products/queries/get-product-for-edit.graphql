@@ -1,0 +1,3 @@
+query GetProductForEdit($id: ID!) {
+    product(id: $id) { id name description price stock imageUrls category { id name } }
+  }

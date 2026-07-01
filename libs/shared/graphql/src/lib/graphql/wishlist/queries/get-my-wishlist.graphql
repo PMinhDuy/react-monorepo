@@ -1,0 +1,3 @@
+query GetMyWishlist {
+    myWishlist { id name price imageUrls }
+  }

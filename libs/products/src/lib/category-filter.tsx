@@ -1,14 +1,6 @@
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type { GetCategoriesQuery, GetCategoriesQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetCategoriesDocument } from '@react-monorepo/shared-graphql'
 import { cn } from '@react-monorepo/shared-ui'
-
-const GET_CATEGORIES: TypedDocumentNode<GetCategoriesQuery, GetCategoriesQueryVariables> = gql`
-  query GetCategories {
-    categories { id name parent { id } }
-  }
-`
 
 interface CategoryFilterProps {
   selected?: string
@@ -16,7 +8,7 @@ interface CategoryFilterProps {
 }
 
 export function CategoryFilter({ selected, onChange }: CategoryFilterProps) {
-  const { data } = useQuery(GET_CATEGORIES)
+  const { data } = useQuery(GetCategoriesDocument)
   const categories = data?.categories ?? []
 
   const pillClass = (active: boolean) =>

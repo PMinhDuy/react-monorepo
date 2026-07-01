@@ -1,55 +1,16 @@
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetDashboardStatsQuery,
-  GetDashboardStatsQueryVariables,
-  GetRevenueChartQuery,
-  GetRevenueChartQueryVariables,
-  GetTopProductsQuery,
-  GetTopProductsQueryVariables,
-  GetOrdersQuery,
-  GetOrdersQueryVariables,
-  GetLowStockProductsQuery,
-  GetLowStockProductsQueryVariables,
-} from '@react-monorepo/shared-graphql'
+import { GetDashboardStatsDocument, GetLowStockDashboardDocument, GetRecentOrdersDocument, GetRevenueChartDocument, GetTopProductsDocument } from '@react-monorepo/shared-graphql'
 import { Card, CardContent } from '@react-monorepo/shared-ui'
 import { StatsCard, RevenueChart, TopProductsTable, OrderStatusPie } from '@react-monorepo/catalog'
 import { Link } from 'react-router-dom'
 import { DollarSign, ShoppingCart, Package, Clock, Users, AlertTriangle } from 'lucide-react'
 
-const GET_STATS: TypedDocumentNode<GetDashboardStatsQuery, GetDashboardStatsQueryVariables> = gql`
-  query GetDashboardStats { dashboardStats {
-    totalRevenue revenueThisMonth revenueLastMonth
-    totalOrders pendingOrders totalProducts lowStockProducts totalCustomers
-  }}
-`
-
-const GET_REVENUE_CHART: TypedDocumentNode<GetRevenueChartQuery, GetRevenueChartQueryVariables> = gql`
-  query GetRevenueChart($days: Int) { revenueChart(days: $days) { date revenue orderCount } }
-`
-
-const GET_TOP_PRODUCTS: TypedDocumentNode<GetTopProductsQuery, GetTopProductsQueryVariables> = gql`
-  query GetTopProducts($limit: Int) { topProducts(limit: $limit) {
-    totalSold totalRevenue
-    product { id name }
-  }}
-`
-
-const GET_RECENT_ORDERS: TypedDocumentNode<GetOrdersQuery, GetOrdersQueryVariables> = gql`
-  query GetRecentOrders($limit: Int) { orders(limit: $limit, offset: 0) { id status totalAmount createdAt } }
-`
-
-const GET_LOW_STOCK: TypedDocumentNode<GetLowStockProductsQuery, GetLowStockProductsQueryVariables> = gql`
-  query GetLowStockDashboard { lowStockProducts { id name stock lowStockThreshold } }
-`
-
 export function DashboardPage() {
-  const { data: statsData } = useQuery(GET_STATS)
-  const { data: chartData } = useQuery(GET_REVENUE_CHART, { variables: { days: 30 } })
-  const { data: topData } = useQuery(GET_TOP_PRODUCTS, { variables: { limit: 5 } })
-  const { data: ordersData } = useQuery(GET_RECENT_ORDERS, { variables: { limit: 10 } })
-  const { data: lowStockData } = useQuery(GET_LOW_STOCK)
+  const { data: statsData } = useQuery(GetDashboardStatsDocument)
+  const { data: chartData } = useQuery(GetRevenueChartDocument, { variables: { days: 30 } })
+  const { data: topData } = useQuery(GetTopProductsDocument, { variables: { limit: 5 } })
+  const { data: ordersData } = useQuery(GetRecentOrdersDocument, { variables: { limit: 10 } })
+  const { data: lowStockData } = useQuery(GetLowStockDashboardDocument)
 
   const stats = statsData?.dashboardStats
   const revenueChart = chartData?.revenueChart ?? []

@@ -1,54 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
 import { useParams, Link } from 'react-router-dom'
-import type {
-  GetMyOrderQuery,
-  GetMyOrderQueryVariables,
-  CancelMyOrderMutation,
-  CancelMyOrderMutationVariables,
-  CreateCheckoutSessionMutation,
-  CreateCheckoutSessionMutationVariables,
-} from '@react-monorepo/shared-graphql'
+import { CancelMyOrderDocument, CreateCheckoutSessionFromDetailDocument, GetMyOrderDocument } from '@react-monorepo/shared-graphql'
 import { Card, CardContent, Button } from '@react-monorepo/shared-ui'
 import { OrderStatusBadge } from '@react-monorepo/orders'
 import { ArrowLeft, XCircle } from 'lucide-react'
-
-const GET_MY_ORDER: TypedDocumentNode<GetMyOrderQuery, GetMyOrderQueryVariables> = gql`
-  query GetMyOrder($id: ID!) {
-    myOrder(id: $id) {
-      id
-      status
-      totalAmount
-      createdAt
-      updatedAt
-      items {
-        id
-        productId
-        quantity
-        unitPrice
-      }
-    }
-  }
-`
-
-const CANCEL_MY_ORDER: TypedDocumentNode<CancelMyOrderMutation, CancelMyOrderMutationVariables> = gql`
-  mutation CancelMyOrder($id: ID!) {
-    cancelMyOrder(id: $id) {
-      id status updatedAt
-    }
-  }
-`
-
-const CREATE_CHECKOUT_SESSION: TypedDocumentNode<
-  CreateCheckoutSessionMutation,
-  CreateCheckoutSessionMutationVariables
-> = gql`
-  mutation CreateCheckoutSessionFromDetail($orderId: ID!) {
-    createCheckoutSession(orderId: $orderId)
-  }
-`
 
 const CANCELLABLE = new Set(['PENDING', 'AWAITING_PAYMENT', 'CONFIRMED'])
 
@@ -56,14 +12,14 @@ export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [cancelError, setCancelError] = useState<string | null>(null)
-  const { data, loading, error } = useQuery(GET_MY_ORDER, {
+  const { data, loading, error } = useQuery(GetMyOrderDocument, {
     variables: { id: id! },
     skip: !id,
   })
-  const [cancelOrder, { loading: cancelling }] = useMutation(CANCEL_MY_ORDER, {
-    refetchQueries: [{ query: GET_MY_ORDER, variables: { id: id! } }],
+  const [cancelOrder, { loading: cancelling }] = useMutation(CancelMyOrderDocument, {
+    refetchQueries: [{ query: GetMyOrderDocument, variables: { id: id! } }],
   })
-  const [createCheckoutSession, { loading: redirecting }] = useMutation(CREATE_CHECKOUT_SESSION)
+  const [createCheckoutSession, { loading: redirecting }] = useMutation(CreateCheckoutSessionFromDetailDocument)
   const order = data?.myOrder
 
   const handleRetryPayment = async () => {

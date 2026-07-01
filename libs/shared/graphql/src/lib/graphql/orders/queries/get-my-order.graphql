@@ -1,0 +1,15 @@
+query GetMyOrder($id: ID!) {
+    myOrder(id: $id) {
+      id
+      status
+      totalAmount
+      createdAt
+      updatedAt
+      items {
+        id
+        productId
+        quantity
+        unitPrice
+      }
+    }
+  }

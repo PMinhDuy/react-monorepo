@@ -1,0 +1,3 @@
+mutation RemoveFromWishlist($productId: ID!) {
+    removeFromWishlist(productId: $productId)
+  }

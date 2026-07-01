@@ -1,0 +1,5 @@
+mutation CancelMyOrder($id: ID!) {
+    cancelMyOrder(id: $id) {
+      id status updatedAt
+    }
+  }

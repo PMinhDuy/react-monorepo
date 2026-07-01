@@ -1,0 +1,6 @@
+query GetAdminOrders($limit: Int, $offset: Int) {
+    orders(limit: $limit, offset: $offset) {
+      id status totalAmount createdAt
+      items { id productId quantity unitPrice }
+    }
+  }

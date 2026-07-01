@@ -1,0 +1,6 @@
+query GetCustomers($search: String, $limit: Int, $offset: Int) {
+    customers(search: $search, limit: $limit, offset: $offset) {
+      totalOrders totalSpent lastOrderAt
+      user { id email name role isActive createdAt updatedAt addresses { id street city country postalCode isDefault createdAt } }
+    }
+  }

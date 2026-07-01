@@ -1,0 +1,3 @@
+query GetAdminCategories {
+    categories { id name parent { id } }
+  }

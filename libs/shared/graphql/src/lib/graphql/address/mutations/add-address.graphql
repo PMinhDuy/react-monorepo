@@ -1,0 +1,5 @@
+  mutation AddAddress($street: String!, $city: String!, $country: String!, $postalCode: String, $isDefault: Boolean!) {
+    addAddress(input: { street: $street, city: $city, country: $country, postalCode: $postalCode, isDefault: $isDefault }) {
+      ...AddressFields
+    }
+  }

@@ -1,44 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetProductReviewsQuery,
-  GetProductReviewsQueryVariables,
-  CreateReviewMutation,
-  CreateReviewMutationVariables,
-  GetMyOrdersQuery,
-  GetMyOrdersQueryVariables,
-} from '@react-monorepo/shared-graphql'
+import { CreateReviewDocument, GetMyOrdersForReviewDocument, GetProductReviewsDocument } from '@react-monorepo/shared-graphql'
 import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Button } from '@react-monorepo/shared-ui'
 import { StarRating } from './star-rating'
 import { ReviewCard } from './review-card'
-
-const GET_PRODUCT_REVIEWS: TypedDocumentNode<GetProductReviewsQuery, GetProductReviewsQueryVariables> = gql`
-  query GetProductReviews($productId: ID!, $limit: Int, $offset: Int) {
-    productReviews(productId: $productId, limit: $limit, offset: $offset) {
-      id userId rating comment createdAt
-    }
-  }
-`
-
-const CREATE_REVIEW: TypedDocumentNode<CreateReviewMutation, CreateReviewMutationVariables> = gql`
-  mutation CreateReview($productId: ID!, $orderId: ID!, $rating: Int!, $comment: String) {
-    createReview(productId: $productId, orderId: $orderId, rating: $rating, comment: $comment) {
-      id rating comment createdAt
-    }
-  }
-`
-
-const GET_MY_ORDERS_FOR_REVIEW: TypedDocumentNode<GetMyOrdersQuery, GetMyOrdersQueryVariables> = gql`
-  query GetMyOrdersForReview {
-    myOrders {
-      id status
-      items { productId }
-    }
-  }
-`
 
 interface ReviewListProps {
   productId: string
@@ -51,12 +17,12 @@ export function ReviewList({ productId }: ReviewListProps) {
   const [showForm, setShowForm] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
-  const { data: reviewsData, loading } = useQuery(GET_PRODUCT_REVIEWS, {
+  const { data: reviewsData, loading } = useQuery(GetProductReviewsDocument, {
     variables: { productId, limit: 20, offset: 0 },
   })
-  const { data: ordersData } = useQuery(GET_MY_ORDERS_FOR_REVIEW, { skip: !accessToken })
-  const [createReview, { loading: submitting }] = useMutation(CREATE_REVIEW, {
-    refetchQueries: [{ query: GET_PRODUCT_REVIEWS, variables: { productId, limit: 20, offset: 0 } }],
+  const { data: ordersData } = useQuery(GetMyOrdersForReviewDocument, { skip: !accessToken })
+  const [createReview, { loading: submitting }] = useMutation(CreateReviewDocument, {
+    refetchQueries: [{ query: GetProductReviewsDocument, variables: { productId, limit: 20, offset: 0 } }],
   })
 
   const reviews = reviewsData?.productReviews ?? []

@@ -1,0 +1,6 @@
+query GetCustomerOrders($userId: ID, $limit: Int) {
+    orders(userId: $userId, limit: $limit, offset: 0) {
+      id status totalAmount createdAt
+      items { id productId quantity unitPrice }
+    }
+  }

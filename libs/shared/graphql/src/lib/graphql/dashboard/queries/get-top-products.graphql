@@ -1,0 +1,4 @@
+query GetTopProducts($limit: Int) { topProducts(limit: $limit) {
+    totalSold totalRevenue
+    product { id name }
+  }}

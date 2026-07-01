@@ -1,0 +1,3 @@
+fragment AddressFields on Address {
+    id street city country postalCode isDefault createdAt
+  }

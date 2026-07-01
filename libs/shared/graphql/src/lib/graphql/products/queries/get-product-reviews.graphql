@@ -1,0 +1,5 @@
+query GetProductReviews($productId: ID!, $limit: Int, $offset: Int) {
+    productReviews(productId: $productId, limit: $limit, offset: $offset) {
+      id userId rating comment createdAt
+    }
+  }

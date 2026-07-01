@@ -1,0 +1,11 @@
+query GetMyCart {
+    myCart {
+      total
+      items {
+        productId
+        quantity
+        subtotal
+        product { id name price imageUrls }
+      }
+    }
+  }

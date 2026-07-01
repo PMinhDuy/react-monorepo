@@ -1,26 +1,12 @@
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
 import { Link } from 'react-router-dom'
-import type { GetMyOrdersQuery, GetMyOrdersQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetMyOrdersDocument } from '@react-monorepo/shared-graphql'
 import { Card, CardContent } from '@react-monorepo/shared-ui'
 import { OrderStatusBadge } from '@react-monorepo/orders'
 import { Package } from 'lucide-react'
 
-const GET_MY_ORDERS: TypedDocumentNode<GetMyOrdersQuery, GetMyOrdersQueryVariables> = gql`
-  query GetMyOrders {
-    myOrders {
-      id
-      status
-      totalAmount
-      createdAt
-      items { id quantity unitPrice }
-    }
-  }
-`
-
 export function OrdersPage() {
-  const { data, loading } = useQuery(GET_MY_ORDERS)
+  const { data, loading } = useQuery(GetMyOrdersDocument)
   const orders = data?.myOrders ?? []
 
   if (loading) {

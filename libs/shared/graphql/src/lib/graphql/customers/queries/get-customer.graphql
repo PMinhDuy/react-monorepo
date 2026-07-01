@@ -1,0 +1,6 @@
+query GetCustomer($id: ID!) {
+    customer(id: $id) {
+      totalOrders totalSpent lastOrderAt
+      user { id email name role isActive createdAt updatedAt addresses { id street city country postalCode isDefault createdAt } }
+    }
+  }

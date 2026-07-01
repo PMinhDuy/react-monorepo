@@ -1,0 +1,3 @@
+mutation CreateCheckoutSessionFromDetail($orderId: ID!) {
+    createCheckoutSession(orderId: $orderId)
+  }

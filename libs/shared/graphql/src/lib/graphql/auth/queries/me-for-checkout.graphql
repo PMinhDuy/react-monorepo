@@ -1,0 +1,6 @@
+query MeForCheckout {
+    me {
+      id
+      addresses { id isDefault }
+    }
+  }

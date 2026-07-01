@@ -1,15 +1,10 @@
 import { useState, useEffect } from 'react'
 import { useParams, Link, useSearchParams } from 'react-router-dom'
-import { useQuery, useApolloClient } from '@apollo/client/react'
-import { gql } from '@apollo/client'
+import { useQuery } from '@apollo/client/react'
+import { useApolloClient } from '@apollo/client'
 import { Button } from '@react-monorepo/shared-ui'
 import { CheckCircle2, Package, ArrowRight, CreditCard, Loader2, XCircle, Clock } from 'lucide-react'
-
-const GET_ORDER_STATUS = gql`
-  query GetOrderForSuccess($id: ID!) {
-    myOrder(id: $id) { id status }
-  }
-`
+import { GetOrderForSuccessDocument } from '@react-monorepo/shared-graphql'
 
 export function OrderSuccessPage() {
   const { orderId } = useParams<{ orderId: string }>()
@@ -20,7 +15,7 @@ export function OrderSuccessPage() {
 
   const { data, loading, startPolling, stopPolling } = useQuery<{
     myOrder: { id: string; status: string }
-  }>(GET_ORDER_STATUS, {
+  }>(GetOrderForSuccessDocument, {
     variables: { id: orderId! },
     skip: !orderId || !paidViaStripe,
   })

@@ -1,31 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  RemoveProductMutation,
-  RemoveProductMutationVariables,
-  BulkUpdateProductsMutation,
-  BulkUpdateProductsMutationVariables,
-  BulkDeleteProductsMutation,
-  BulkDeleteProductsMutationVariables,
-  GetAdminProductsQuery,
-} from '@react-monorepo/shared-graphql'
+import { BulkDeleteProductsDocument, BulkUpdateProductsDocument, GetAdminProductsQuery, RemoveProductDocument } from '@react-monorepo/shared-graphql'
 import { Button, Badge, cn } from '@react-monorepo/shared-ui'
 import { Package, Pencil, Trash2, AlertTriangle } from 'lucide-react'
-
-const REMOVE_PRODUCT: TypedDocumentNode<RemoveProductMutation, RemoveProductMutationVariables> = gql`
-  mutation RemoveProduct($id: ID!) { removeProduct(id: $id) }
-`
-
-const BULK_UPDATE: TypedDocumentNode<BulkUpdateProductsMutation, BulkUpdateProductsMutationVariables> = gql`
-  mutation BulkUpdateProducts($ids: [ID!]!, $isActive: Boolean!) { bulkUpdateProducts(ids: $ids, isActive: $isActive) }
-`
-
-const BULK_DELETE: TypedDocumentNode<BulkDeleteProductsMutation, BulkDeleteProductsMutationVariables> = gql`
-  mutation BulkDeleteProducts($ids: [ID!]!) { bulkDeleteProducts(ids: $ids) }
-`
 
 type Product = GetAdminProductsQuery['adminProducts']['items'][number]
 
@@ -37,9 +15,9 @@ interface ProductTableProps {
 export function ProductTable({ products, onDeleted }: ProductTableProps) {
   const [selected, setSelected] = useState<Set<string>>(new Set())
 
-  const [removeProduct] = useMutation(REMOVE_PRODUCT, { onCompleted: onDeleted })
-  const [bulkUpdate] = useMutation(BULK_UPDATE, { onCompleted: () => { setSelected(new Set()); onDeleted() } })
-  const [bulkDelete] = useMutation(BULK_DELETE, { onCompleted: () => { setSelected(new Set()); onDeleted() } })
+  const [removeProduct] = useMutation(RemoveProductDocument, { onCompleted: onDeleted })
+  const [bulkUpdate] = useMutation(BulkUpdateProductsDocument, { onCompleted: () => { setSelected(new Set()); onDeleted() } })
+  const [bulkDelete] = useMutation(BulkDeleteProductsDocument, { onCompleted: () => { setSelected(new Set()); onDeleted() } })
 
   const allSelected = products.length > 0 && selected.size === products.length
   const toggleAll = () => setSelected(allSelected ? new Set() : new Set(products.map((p) => p.id)))

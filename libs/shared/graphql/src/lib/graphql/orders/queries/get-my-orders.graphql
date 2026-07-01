@@ -1,0 +1,9 @@
+query GetMyOrders {
+    myOrders {
+      id
+      status
+      totalAmount
+      createdAt
+      items { id quantity unitPrice }
+    }
+  }

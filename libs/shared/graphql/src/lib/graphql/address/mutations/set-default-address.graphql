@@ -1,0 +1,3 @@
+  mutation SetDefaultAddress($id: ID!) {
+    setDefaultAddress(id: $id) { ...AddressFields }
+  }

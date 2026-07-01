@@ -1,0 +1,17 @@
+mutation CreateProduct(
+    $name: String!
+    $description: String
+    $price: Float!
+    $stock: Int!
+    $categoryId: ID!
+    $imageKeys: [String!]!
+  ) {
+    createProduct(input: {
+      name: $name
+      description: $description
+      price: $price
+      stock: $stock
+      categoryId: $categoryId
+      imageKeys: $imageKeys
+    }) { id name }
+  }

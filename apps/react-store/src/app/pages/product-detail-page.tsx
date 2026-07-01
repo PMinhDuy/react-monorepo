@@ -1,9 +1,7 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
 import { useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type { GetProductQuery, GetProductQueryVariables } from '@react-monorepo/shared-graphql'
+import { GetProductDocument } from '@react-monorepo/shared-graphql'
 import { Button, Badge } from '@react-monorepo/shared-ui'
 import { useCart, useCartUIStore } from '@react-monorepo/orders'
 import {
@@ -18,21 +16,10 @@ import {
 import { SeoHead } from '@react-monorepo/shared-ui'
 import { ShoppingCart, Zap, ChevronLeft } from 'lucide-react'
 
-const GET_PRODUCT: TypedDocumentNode<GetProductQuery, GetProductQueryVariables> = gql`
-  query GetProduct($id: ID!) {
-    product(id: $id) {
-      id name description price imageUrls
-      category { id name }
-      averageRating reviewCount
-      relatedProducts(limit: 4) { id name price imageUrls }
-    }
-  }
-`
-
 export function ProductDetailPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
-  const { data, loading } = useQuery(GET_PRODUCT, { variables: { id: id! } })
+  const { data, loading } = useQuery(GetProductDocument, { variables: { id: id! } })
   const { addToCart } = useCart()
   const openCart = useCartUIStore((s) => s.openCart)
   const [quantity, setQuantity] = useState(1)

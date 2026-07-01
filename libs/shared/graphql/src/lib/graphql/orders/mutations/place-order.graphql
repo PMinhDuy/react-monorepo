@@ -1,0 +1,8 @@
+mutation PlaceOrder($shippingAddressId: ID!) {
+    placeOrder(shippingAddressId: $shippingAddressId) {
+      id
+      status
+      totalAmount
+      createdAt
+    }
+  }

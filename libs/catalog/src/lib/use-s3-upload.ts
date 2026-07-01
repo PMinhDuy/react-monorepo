@@ -1,28 +1,12 @@
 import { useState } from 'react'
 import { useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  RequestUploadUrlMutation,
-  RequestUploadUrlMutationVariables,
-} from '@react-monorepo/shared-graphql'
+import { RequestUploadUrlDocument } from '@react-monorepo/shared-graphql'
 
 // NestJS Lambda — use scalar vars, inline input object (no named input type)
-const REQUEST_UPLOAD_URL: TypedDocumentNode<
-  RequestUploadUrlMutation,
-  RequestUploadUrlMutationVariables
-> = gql`
-  mutation RequestUploadUrl($filename: String!, $contentType: String!) {
-    requestProductUploadUrl(filename: $filename, contentType: $contentType) {
-      uploadUrl
-      key
-    }
-  }
-`
 
 export function useS3Upload() {
   const [uploading, setUploading] = useState(false)
-  const [requestUploadUrl] = useMutation(REQUEST_UPLOAD_URL)
+  const [requestUploadUrl] = useMutation(RequestUploadUrlDocument)
 
   /** Uploads file to S3 and returns the S3 object key (not a URL). */
   const uploadFile = async (file: File): Promise<string> => {

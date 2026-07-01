@@ -1,57 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetCategoriesQuery,
-  GetCategoriesQueryVariables,
-  CreateCategoryMutation,
-  CreateCategoryMutationVariables,
-  UpdateCategoryMutation,
-  UpdateCategoryMutationVariables,
-  RemoveCategoryMutation,
-  RemoveCategoryMutationVariables,
-} from '@react-monorepo/shared-graphql'
+import { CreateCategoryDocument, GetAdminCategoriesDocument, GetCategoriesQuery, RemoveCategoryDocument, UpdateCategoryDocument } from '@react-monorepo/shared-graphql'
 import { Button } from '@react-monorepo/shared-ui'
 import { CategoryTree, CategoryForm, type CategoryFormData } from '@react-monorepo/catalog'
 
-const GET_CATEGORIES: TypedDocumentNode<GetCategoriesQuery, GetCategoriesQueryVariables> = gql`
-  query GetAdminCategories {
-    categories { id name parent { id } }
-  }
-`
-
 // NestJS Lambda — inline input objects with scalar vars (no named input types)
-const CREATE_CATEGORY: TypedDocumentNode<
-  CreateCategoryMutation,
-  CreateCategoryMutationVariables
-> = gql`
-  mutation CreateCategory($name: String!, $description: String, $parentId: ID) {
-    createCategory(input: { name: $name, description: $description, parentId: $parentId }) {
-      id name parent { id }
-    }
-  }
-`
-
-const UPDATE_CATEGORY: TypedDocumentNode<
-  UpdateCategoryMutation,
-  UpdateCategoryMutationVariables
-> = gql`
-  mutation UpdateCategory($id: ID!, $name: String, $description: String, $isActive: Boolean) {
-    updateCategory(id: $id, input: { name: $name, description: $description, isActive: $isActive }) {
-      id name parent { id }
-    }
-  }
-`
-
-const REMOVE_CATEGORY: TypedDocumentNode<
-  RemoveCategoryMutation,
-  RemoveCategoryMutationVariables
-> = gql`
-  mutation RemoveCategory($id: ID!) {
-    removeCategory(id: $id)
-  }
-`
 
 type Category = GetCategoriesQuery['categories'][number]
 
@@ -59,16 +12,16 @@ export function AdminCategoriesPage() {
   const [editing, setEditing] = useState<Category | null>(null)
   const [adding, setAdding] = useState(false)
 
-  const { data, refetch } = useQuery(GET_CATEGORIES)
+  const { data, refetch } = useQuery(GetAdminCategoriesDocument)
   const categories = data?.categories ?? []
 
-  const [createCategory, { loading: creating }] = useMutation(CREATE_CATEGORY, {
+  const [createCategory, { loading: creating }] = useMutation(CreateCategoryDocument, {
     onCompleted: () => { refetch(); setAdding(false) },
   })
-  const [updateCategory, { loading: updating }] = useMutation(UPDATE_CATEGORY, {
+  const [updateCategory, { loading: updating }] = useMutation(UpdateCategoryDocument, {
     onCompleted: () => { refetch(); setEditing(null) },
   })
-  const [removeCategory] = useMutation(REMOVE_CATEGORY, { onCompleted: () => refetch() })
+  const [removeCategory] = useMutation(RemoveCategoryDocument, { onCompleted: () => refetch() })
 
   const handleCreate = async (formData: CategoryFormData) => {
     await createCategory({ variables: { name: formData.name, parentId: formData.parentId } })

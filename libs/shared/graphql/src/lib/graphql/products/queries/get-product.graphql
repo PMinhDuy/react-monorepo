@@ -1,0 +1,8 @@
+query GetProduct($id: ID!) {
+    product(id: $id) {
+      id name description price imageUrls
+      category { id name }
+      averageRating reviewCount
+      relatedProducts(limit: 4) { id name price imageUrls }
+    }
+  }

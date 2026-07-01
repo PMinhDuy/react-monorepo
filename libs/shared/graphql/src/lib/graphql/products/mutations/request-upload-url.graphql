@@ -1,0 +1,6 @@
+mutation RequestUploadUrl($filename: String!, $contentType: String!) {
+    requestProductUploadUrl(filename: $filename, contentType: $contentType) {
+      uploadUrl
+      key
+    }
+  }

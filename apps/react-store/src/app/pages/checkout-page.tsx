@@ -1,55 +1,23 @@
 import { useMutation, useQuery } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
 import { Link, useSearchParams } from 'react-router-dom'
-import type {
-  PlaceOrderMutation,
-  PlaceOrderMutationVariables,
-  MeQuery,
-  MeQueryVariables,
-} from '@react-monorepo/shared-graphql'
+import { CreateCheckoutSessionDocument, MeForCheckoutDocument, PlaceOrderDocument } from '@react-monorepo/shared-graphql'
 import { useCart } from '@react-monorepo/orders'
 import { Button, Card, CardContent } from '@react-monorepo/shared-ui'
 import { useState, useEffect } from 'react'
 import { MapPin } from 'lucide-react'
 
 // placeOrder takes a direct shippingAddressId arg, not an input object
-const PLACE_ORDER: TypedDocumentNode<PlaceOrderMutation, PlaceOrderMutationVariables> = gql`
-  mutation PlaceOrder($shippingAddressId: ID!) {
-    placeOrder(shippingAddressId: $shippingAddressId) {
-      id
-      status
-      totalAmount
-      createdAt
-    }
-  }
-`
-
-const CREATE_CHECKOUT_SESSION = gql`
-  mutation CreateCheckoutSession($orderId: ID!) {
-    createCheckoutSession(orderId: $orderId)
-  }
-`
-
-const ME_QUERY: TypedDocumentNode<MeQuery, MeQueryVariables> = gql`
-  query MeForCheckout {
-    me {
-      id
-      addresses { id isDefault }
-    }
-  }
-`
 
 export function CheckoutPage() {
   const { items, total } = useCart()
   const [searchParams] = useSearchParams()
   const wasCancelled = searchParams.get('cancelled') === 'true'
-  const { data: meData, loading: meLoading, error: meError } = useQuery(ME_QUERY)
-  const [placeOrder, { loading: placing }] = useMutation(PLACE_ORDER)
+  const { data: meData, loading: meLoading, error: meError } = useQuery(MeForCheckoutDocument)
+  const [placeOrder, { loading: placing }] = useMutation(PlaceOrderDocument)
   const [createCheckoutSession, { loading: redirecting }] = useMutation<
     { createCheckoutSession: string },
     { orderId: string }
-  >(CREATE_CHECKOUT_SESSION)
+  >(CreateCheckoutSessionDocument)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [selectedAddressId, setSelectedAddressId] = useState<string | null>(null)
 

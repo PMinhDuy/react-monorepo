@@ -1,39 +1,8 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetCustomerQuery,
-  GetCustomerQueryVariables,
-  GetOrdersQuery,
-  GetOrdersQueryVariables,
-  DeactivateUserMutation,
-  DeactivateUserMutationVariables,
-} from '@react-monorepo/shared-graphql'
+import { DeactivateUserDocument, GetCustomerDocument, GetCustomerOrdersDocument } from '@react-monorepo/shared-graphql'
 import { Button, Badge, Card, CardContent } from '@react-monorepo/shared-ui'
 import { ChevronLeft, ShoppingCart, DollarSign, Calendar } from 'lucide-react'
-
-const GET_CUSTOMER: TypedDocumentNode<GetCustomerQuery, GetCustomerQueryVariables> = gql`
-  query GetCustomer($id: ID!) {
-    customer(id: $id) {
-      totalOrders totalSpent lastOrderAt
-      user { id email name role isActive createdAt updatedAt addresses { id street city country postalCode isDefault createdAt } }
-    }
-  }
-`
-
-const GET_CUSTOMER_ORDERS: TypedDocumentNode<GetOrdersQuery, GetOrdersQueryVariables> = gql`
-  query GetCustomerOrders($userId: ID, $limit: Int) {
-    orders(userId: $userId, limit: $limit, offset: 0) {
-      id status totalAmount createdAt
-      items { id productId quantity unitPrice }
-    }
-  }
-`
-
-const DEACTIVATE_USER: TypedDocumentNode<DeactivateUserMutation, DeactivateUserMutationVariables> = gql`
-  mutation DeactivateUser($id: ID!) { deactivateUser(id: $id) { id isActive } }
-`
 
 const STATUS_COLORS: Record<string, string> = {
   PENDING: 'bg-amber-100 text-amber-800',
@@ -47,11 +16,11 @@ const STATUS_COLORS: Record<string, string> = {
 export function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>()
 
-  const { data, refetch } = useQuery(GET_CUSTOMER, { variables: { id: id! } })
-  const { data: ordersData, loading: ordersLoading } = useQuery(GET_CUSTOMER_ORDERS, {
+  const { data, refetch } = useQuery(GetCustomerDocument, { variables: { id: id! } })
+  const { data: ordersData, loading: ordersLoading } = useQuery(GetCustomerOrdersDocument, {
     variables: { userId: id, limit: 20 },
   })
-  const [deactivate, { loading: deactivating }] = useMutation(DEACTIVATE_USER, {
+  const [deactivate, { loading: deactivating }] = useMutation(DeactivateUserDocument, {
     onCompleted: () => refetch(),
   })
 
@@ -85,7 +54,7 @@ export function CustomerDetailPage() {
               size="sm"
               disabled={deactivating}
               onClick={() => {
-                if (confirm(`Deactivate account for ${user.name}?`)) {
+                if (window.confirm(`Deactivate account for ${user.name}?`)) {
                   deactivate({ variables: { id: user.id } })
                 }
               }}

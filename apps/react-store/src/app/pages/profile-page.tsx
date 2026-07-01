@@ -1,57 +1,10 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
-import { gql } from '@apollo/client'
-import type { TypedDocumentNode } from '@apollo/client'
-import type {
-  GetMyAddressesQuery,
-  GetMyAddressesQueryVariables,
-  AddAddressMutation,
-  AddAddressMutationVariables,
-  RemoveAddressMutation,
-  RemoveAddressMutationVariables,
-  SetDefaultAddressMutation,
-  SetDefaultAddressMutationVariables,
-  Address,
-} from '@react-monorepo/shared-graphql'
+import { AddAddressDocument, Address, GetMyAddressesDocument, RemoveAddressDocument, SetDefaultAddressDocument } from '@react-monorepo/shared-graphql'
 import { Button, Card, CardContent } from '@react-monorepo/shared-ui'
 import { MapPin, Plus, Trash2, Star } from 'lucide-react'
 
-const ADDRESS_FIELDS = gql`
-  fragment AddressFields on Address {
-    id street city country postalCode isDefault createdAt
-  }
-`
-
-const GET_MY_ADDRESSES: TypedDocumentNode<GetMyAddressesQuery, GetMyAddressesQueryVariables> = gql`
-  ${ADDRESS_FIELDS}
-  query GetMyAddresses {
-    myAddresses { ...AddressFields }
-  }
-`
-
-const ADD_ADDRESS: TypedDocumentNode<AddAddressMutation, AddAddressMutationVariables> = gql`
-  ${ADDRESS_FIELDS}
-  mutation AddAddress($street: String!, $city: String!, $country: String!, $postalCode: String, $isDefault: Boolean!) {
-    addAddress(input: { street: $street, city: $city, country: $country, postalCode: $postalCode, isDefault: $isDefault }) {
-      ...AddressFields
-    }
-  }
-`
-
-const REMOVE_ADDRESS: TypedDocumentNode<RemoveAddressMutation, RemoveAddressMutationVariables> = gql`
-  mutation RemoveAddress($id: ID!) {
-    removeAddress(id: $id)
-  }
-`
-
-const SET_DEFAULT_ADDRESS: TypedDocumentNode<SetDefaultAddressMutation, SetDefaultAddressMutationVariables> = gql`
-  ${ADDRESS_FIELDS}
-  mutation SetDefaultAddress($id: ID!) {
-    setDefaultAddress(id: $id) { ...AddressFields }
-  }
-`
-
-const refetchAddresses = { refetchQueries: [{ query: GET_MY_ADDRESSES }] }
+const refetchAddresses = { refetchQueries: [{ query: GetMyAddressesDocument }] }
 
 interface AddressFormValues {
   street: string
@@ -172,10 +125,10 @@ function AddressForm({ onSubmit, onCancel }: {
 
 export function ProfilePage() {
   const [showForm, setShowForm] = useState(false)
-  const { data, loading } = useQuery(GET_MY_ADDRESSES)
-  const [addAddress] = useMutation(ADD_ADDRESS, refetchAddresses)
-  const [removeAddress] = useMutation(REMOVE_ADDRESS, refetchAddresses)
-  const [setDefaultAddress] = useMutation(SET_DEFAULT_ADDRESS, refetchAddresses)
+  const { data, loading } = useQuery(GetMyAddressesDocument)
+  const [addAddress] = useMutation(AddAddressDocument, refetchAddresses)
+  const [removeAddress] = useMutation(RemoveAddressDocument, refetchAddresses)
+  const [setDefaultAddress] = useMutation(SetDefaultAddressDocument, refetchAddresses)
 
   const addresses = data?.myAddresses ?? []
 

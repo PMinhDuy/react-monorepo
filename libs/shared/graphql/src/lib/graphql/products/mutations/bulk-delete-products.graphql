@@ -1,0 +1,1 @@
+mutation BulkDeleteProducts($ids: [ID!]!) { bulkDeleteProducts(ids: $ids) }

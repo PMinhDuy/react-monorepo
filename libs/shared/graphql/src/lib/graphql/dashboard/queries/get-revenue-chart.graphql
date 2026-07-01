@@ -1,0 +1,1 @@
+query GetRevenueChart($days: Int) { revenueChart(days: $days) { date revenue orderCount } }
