@@ -52,7 +52,7 @@ export function OrderSuccessPage() {
 
   if (loading && !status) {
     return (
-      <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 max-w-md text-center space-y-6">
         <div className="flex justify-center">
           <div className="h-20 w-20 rounded-full bg-muted flex items-center justify-center animate-pulse" />
         </div>
@@ -66,7 +66,7 @@ export function OrderSuccessPage() {
 
   if (status === 'AWAITING_PAYMENT' && !timedOut) {
     return (
-      <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 max-w-md text-center space-y-6">
         <div className="flex justify-center">
           <div className="h-20 w-20 rounded-full bg-blue-50 flex items-center justify-center">
             <Loader2 className="h-10 w-10 text-blue-600 animate-spin" />
@@ -86,7 +86,7 @@ export function OrderSuccessPage() {
 
   if (status === 'AWAITING_PAYMENT' && timedOut) {
     return (
-      <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 max-w-md text-center space-y-6">
         <div className="flex justify-center">
           <div className="h-20 w-20 rounded-full bg-amber-50 flex items-center justify-center">
             <Clock className="h-10 w-10 text-amber-600" />
@@ -110,7 +110,7 @@ export function OrderSuccessPage() {
 
   if (status === 'PAYMENT_FAILED') {
     return (
-      <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 max-w-md text-center space-y-6">
         <div className="flex justify-center">
           <div className="h-20 w-20 rounded-full bg-red-50 flex items-center justify-center">
             <XCircle className="h-10 w-10 text-red-600" />
@@ -133,7 +133,7 @@ export function OrderSuccessPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 py-20 max-w-md text-center space-y-6">
       <div className="flex justify-center">
         <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center">
           <CheckCircle2 className="h-10 w-10 text-emerald-600" />
@@ -181,7 +181,7 @@ export function OrderSuccessPage() {
 
 function SimpleOrderPlacedUI({ orderId }: { orderId?: string }) {
   return (
-    <div className="container mx-auto px-4 py-20 max-w-md text-center space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 py-20 max-w-md text-center space-y-6">
       <div className="flex justify-center">
         <div className="h-20 w-20 rounded-full bg-emerald-50 flex items-center justify-center">
           <CheckCircle2 className="h-10 w-10 text-emerald-600" />

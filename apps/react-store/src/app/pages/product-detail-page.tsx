@@ -42,7 +42,7 @@ export function ProductDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-5xl">
+      <div className="w-full max-w-7xl mx-auto px-4 py-8 max-w-5xl">
         <div className="h-4 bg-muted rounded w-48 mb-6 animate-pulse" />
         <div className="grid md:grid-cols-2 gap-10 animate-pulse">
           <div className="flex flex-col gap-3">
@@ -71,7 +71,7 @@ export function ProductDetailPage() {
 
   if (!data?.product) {
     return (
-      <div className="container mx-auto px-4 py-20 text-center">
+      <div className="w-full max-w-7xl mx-auto px-4 py-20 text-center">
         <p className="text-muted-foreground">Product not found.</p>
         <Link to="/products">
           <Button variant="outline" className="mt-4 gap-2">
@@ -88,7 +88,7 @@ export function ProductDetailPage() {
   const firstImage = images[0]
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-5xl">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 max-w-5xl">
       <SeoHead
         title={product.name}
         description={product.description ?? undefined}

@@ -324,16 +324,15 @@ export type OrderItem = {
   unitPrice: Scalars['Float']['output'];
 };
 
-export enum OrderStatus {
-  AwaitingPayment = 'AWAITING_PAYMENT',
-  Cancelled = 'CANCELLED',
-  Confirmed = 'CONFIRMED',
-  Delivered = 'DELIVERED',
-  PaymentFailed = 'PAYMENT_FAILED',
-  Pending = 'PENDING',
-  Processing = 'PROCESSING',
-  Shipped = 'SHIPPED'
-}
+export type OrderStatus =
+  | 'AWAITING_PAYMENT'
+  | 'CANCELLED'
+  | 'CONFIRMED'
+  | 'DELIVERED'
+  | 'PAYMENT_FAILED'
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'SHIPPED';
 
 export type PaginatedProducts = {
   __typename: 'PaginatedProducts';
@@ -551,21 +550,6 @@ export type User = {
   role: UserRole;
   updatedAt: Scalars['DateTime']['output'];
 };
-
-export enum UserRole {
-  Admin = 'ADMIN',
-  User = 'USER'
-}
-
-export type OrderStatus =
-  | 'AWAITING_PAYMENT'
-  | 'CANCELLED'
-  | 'CONFIRMED'
-  | 'DELIVERED'
-  | 'PAYMENT_FAILED'
-  | 'PENDING'
-  | 'PROCESSING'
-  | 'SHIPPED';
 
 export type UserRole =
   | 'ADMIN'

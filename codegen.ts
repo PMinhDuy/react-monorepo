@@ -15,6 +15,7 @@ const config: CodegenConfig = {
         nonOptionalTypename: true,
         skipTypeNameForRoot: true,
         scalars: { DateTime: 'string' },
+        enumsAsTypes: true,
       },
     },
   },

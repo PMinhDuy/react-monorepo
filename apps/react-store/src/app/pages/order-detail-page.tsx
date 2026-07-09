@@ -46,7 +46,7 @@ export function OrderDetailPage() {
 
   if (loading) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl">
+      <div className="w-full max-w-7xl mx-auto px-4 py-8 max-w-2xl">
         <div className="space-y-4">
           <div className="h-8 w-40 rounded bg-muted animate-pulse" />
           <div className="h-48 rounded-lg bg-muted animate-pulse" />
@@ -57,7 +57,7 @@ export function OrderDetailPage() {
 
   if (error || !order) {
     return (
-      <div className="container mx-auto px-4 py-8 max-w-2xl text-center text-muted-foreground">
+      <div className="w-full max-w-7xl mx-auto px-4 py-8 max-w-2xl text-center text-muted-foreground">
         <p>Order not found.</p>
         <Link to="/orders">
           <Button variant="ghost" className="mt-4">
@@ -69,7 +69,7 @@ export function OrderDetailPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-2xl">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 max-w-2xl">
       <Link to="/orders" className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground mb-6">
         <ArrowLeft className="h-4 w-4" />
         Back to orders

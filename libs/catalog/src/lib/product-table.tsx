@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { useMutation } from '@apollo/client/react'
-import { BulkDeleteProductsDocument, BulkUpdateProductsDocument, GetAdminProductsQuery, RemoveProductDocument } from '@react-monorepo/shared-graphql'
+import { BulkDeleteProductsDocument, BulkUpdateProductsDocument, GetAdminProductsPageQuery, RemoveProductDocument } from '@react-monorepo/shared-graphql'
 import { Button, Badge, cn } from '@react-monorepo/shared-ui'
 import { Package, Pencil, Trash2, AlertTriangle } from 'lucide-react'
 
-type Product = GetAdminProductsQuery['adminProducts']['items'][number]
+type Product = GetAdminProductsPageQuery['adminProducts']['items'][number]
 
 interface ProductTableProps {
   products: Product[]

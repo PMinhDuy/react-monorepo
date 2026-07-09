@@ -16,7 +16,7 @@ export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
 
   return (
     <header className="border-b bg-background/95 backdrop-blur-sm sticky top-0 z-40">
-      <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
+      <nav className="w-full max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           to="/"
           className="flex items-center gap-2 font-bold text-xl tracking-tight hover:opacity-80 transition-opacity"

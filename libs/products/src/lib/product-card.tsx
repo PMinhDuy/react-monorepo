@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
-import { Card, CardContent, CardFooter, Button, Badge } from '@react-monorepo/shared-ui'
+import { Button } from '@react-monorepo/shared-ui'
 import type { GetProductsQuery } from '@react-monorepo/shared-graphql'
-import { ShoppingCart } from 'lucide-react'
+import { Plus } from 'lucide-react'
 import { WishlistButton } from './wishlist-button'
 
 type Product = GetProductsQuery['products']['items'][number]
@@ -13,42 +13,46 @@ interface ProductCardProps {
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
   return (
-    <Card className="flex flex-col group overflow-hidden hover:shadow-lg transition-all duration-300">
-      <div className="relative overflow-hidden">
-        <Link to={`/products/${product.id}`} className="block">
+    <div className="flex flex-col group relative">
+      <div className="relative overflow-hidden rounded-2xl bg-muted/30 aspect-[4/5] mb-4">
+        <Link to={`/products/${product.id}`} className="absolute inset-0">
           <img
-            src={product.imageUrls?.[0] ?? 'https://placehold.co/400x300?text=No+Image'}
+            src={product.imageUrls?.[0] ?? 'https://placehold.co/400x500?text=No+Image'}
             alt={product.name}
-            className="h-48 w-full object-cover group-hover:scale-105 transition-transform duration-500 rounded-t-xl"
+            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-out"
             loading="lazy"
-            width={400}
-            height={300}
           />
         </Link>
         <WishlistButton
           productId={product.id}
-          className="absolute top-2 right-2 bg-background/80 backdrop-blur-sm shadow-sm"
+          className="absolute top-3 right-3 bg-white/80 backdrop-blur-md shadow-sm border-none hover:bg-white text-zinc-600 transition-all duration-300"
         />
+        <div className="absolute bottom-3 left-3 right-3 opacity-0 translate-y-4 group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-300 ease-out">
+          <Button 
+            className="w-full shadow-lg font-medium" 
+            onClick={() => onAddToCart(product.id)}
+          >
+            <Plus className="h-4 w-4 mr-1" />
+            Add to cart
+          </Button>
+        </div>
       </div>
-      <CardContent className="flex-1 p-4 space-y-2">
-        {product.category?.name && (
-          <Badge variant="secondary" className="text-xs font-normal">
-            {product.category.name}
-          </Badge>
-        )}
+      
+      <div className="flex flex-col space-y-1">
+        <div className="flex items-center justify-between gap-2">
+          {product.category?.name && (
+            <span className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wider">
+              {product.category.name}
+            </span>
+          )}
+          <span className="text-sm font-semibold">${product.price.toFixed(2)}</span>
+        </div>
         <Link to={`/products/${product.id}`}>
-          <h3 className="font-semibold text-sm hover:text-primary transition-colors line-clamp-2 leading-snug">
+          <h3 className="font-medium text-base hover:text-primary transition-colors line-clamp-1">
             {product.name}
           </h3>
         </Link>
-        <p className="text-lg font-bold tracking-tight">${product.price.toFixed(2)}</p>
-      </CardContent>
-      <CardFooter className="p-4 pt-0">
-        <Button className="w-full gap-2" size="sm" onClick={() => onAddToCart(product.id)}>
-          <ShoppingCart className="h-4 w-4" />
-          Add to Cart
-        </Button>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   )
 }

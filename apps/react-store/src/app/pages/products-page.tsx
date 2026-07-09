@@ -28,7 +28,7 @@ export function ProductsPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 space-y-6">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 space-y-6">
       <SeoHead title="Shop Products" description="Browse our full catalog — great prices on electronics, clothing, and more." />
       <h1 className="text-3xl font-bold">Products</h1>
 

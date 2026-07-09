@@ -54,7 +54,7 @@ export function CheckoutPage() {
 
   if (items.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-16 text-center text-muted-foreground">
+      <div className="w-full max-w-7xl mx-auto px-4 py-16 text-center text-muted-foreground">
         Your cart is empty.{' '}
         <a href="/products" className="underline">
           Continue shopping
@@ -64,7 +64,7 @@ export function CheckoutPage() {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 max-w-lg">
+    <div className="w-full max-w-7xl mx-auto px-4 py-8 max-w-lg">
       <h1 className="text-2xl font-bold mb-6">Checkout</h1>
       {wasCancelled && (
         <div className="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
