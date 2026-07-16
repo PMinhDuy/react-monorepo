@@ -1,18 +1,18 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { CreateCategoryDocument, GetAdminCategoriesDocument, GetCategoriesQuery, RemoveCategoryDocument, UpdateCategoryDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Button } from '@react-monorepo/shared-ui'
 import { CategoryTree, CategoryForm, type CategoryFormData } from '@react-monorepo/catalog'
-
-// NestJS Lambda — inline input objects with scalar vars (no named input types)
 
 type Category = GetCategoriesQuery['categories'][number]
 
 export function AdminCategoriesPage() {
+  const accessToken = useAuthStore((s) => s.accessToken)
   const [editing, setEditing] = useState<Category | null>(null)
   const [adding, setAdding] = useState(false)
 
-  const { data, refetch } = useQuery(GetAdminCategoriesDocument)
+  const { data, refetch } = useQuery(GetAdminCategoriesDocument, { skip: !accessToken })
   const categories = data?.categories ?? []
 
   const [createCategory, { loading: creating }] = useMutation(CreateCategoryDocument, {

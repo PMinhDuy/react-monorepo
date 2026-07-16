@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useQuery, useLazyQuery } from '@apollo/client/react'
 import { ExportOrdersDocument, GetAdminOrdersDocument, OrderStatus } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Button } from '@react-monorepo/shared-ui'
 import { OrderTable } from '@react-monorepo/catalog'
 import { downloadCsv } from '@react-monorepo/catalog'
@@ -17,12 +18,14 @@ const STATUS_OPTIONS: { label: string; value: OrderStatus | '' }[] = [
 ]
 
 export function AdminOrdersPage() {
+  const accessToken = useAuthStore((s) => s.accessToken)
   const [exportStatus, setExportStatus] = useState<OrderStatus | ''>('')
   const [startDate, setStartDate] = useState('')
   const [endDate, setEndDate] = useState('')
 
   const { data, loading } = useQuery(GetAdminOrdersDocument, {
     variables: { limit: 50, offset: 0 },
+    skip: !accessToken,
   })
 
   const [exportOrders, { loading: exporting, data: exportData }] = useLazyQuery(ExportOrdersDocument)

@@ -1,12 +1,14 @@
 import { useQuery } from '@apollo/client/react'
 import { Link } from 'react-router-dom'
 import { GetMyOrdersDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Card, CardContent } from '@react-monorepo/shared-ui'
 import { OrderStatusBadge } from '@react-monorepo/orders'
 import { Package } from 'lucide-react'
 
 export function OrdersPage() {
-  const { data, loading } = useQuery(GetMyOrdersDocument)
+  const accessToken = useAuthStore((s) => s.accessToken)
+  const { data, loading } = useQuery(GetMyOrdersDocument, { skip: !accessToken })
   const orders = data?.myOrders ?? []
 
   if (loading) {

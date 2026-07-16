@@ -1,6 +1,7 @@
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { DeactivateUserDocument, GetCustomerDocument, GetCustomerOrdersDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Button, Badge, Card, CardContent } from '@react-monorepo/shared-ui'
 import { ChevronLeft, ShoppingCart, DollarSign, Calendar } from 'lucide-react'
 
@@ -15,10 +16,12 @@ const STATUS_COLORS: Record<string, string> = {
 
 export function CustomerDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const accessToken = useAuthStore((s) => s.accessToken)
 
-  const { data, refetch } = useQuery(GetCustomerDocument, { variables: { id: id! } })
+  const { data, refetch } = useQuery(GetCustomerDocument, { variables: { id: id! }, skip: !id || !accessToken })
   const { data: ordersData, loading: ordersLoading } = useQuery(GetCustomerOrdersDocument, {
     variables: { userId: id, limit: 20 },
+    skip: !id || !accessToken,
   })
   const [deactivate, { loading: deactivating }] = useMutation(DeactivateUserDocument, {
     onCompleted: () => refetch(),

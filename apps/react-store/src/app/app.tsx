@@ -1,8 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { Routes, Route, Navigate, Outlet, Link } from 'react-router-dom'
 import { Heart } from 'lucide-react'
-import { ProtectedRoute } from '@react-monorepo/shared-auth'
-import { Navbar } from '@react-monorepo/shared-ui'
+import { Navbar, ProtectedRoute } from '@react-monorepo/shared-ui'
 import { CartBadge, CartDrawer } from '@react-monorepo/orders'
 import { useWishlist } from '@react-monorepo/products'
 
@@ -66,12 +65,12 @@ export function App() {
         {/* App shell with Navbar + CartDrawer */}
         <Route element={<Layout />}>
           {/* Public browsing routes */}
+          <Route path="/" element={<Navigate to="/products" replace />} />
           <Route path="/products" element={<ProductsPage />} />
           <Route path="/products/:id" element={<ProductDetailPage />} />
 
           {/* Protected routes */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Navigate to="/products" replace />} />
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/orders/success/:orderId" element={<OrderSuccessPage />} />
             <Route path="/orders" element={<OrdersPage />} />

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { AddAddressDocument, Address, GetMyAddressesDocument, RemoveAddressDocument, SetDefaultAddressDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Button, Card, CardContent } from '@react-monorepo/shared-ui'
 import { MapPin, Plus, Trash2, Star } from 'lucide-react'
 
@@ -125,7 +126,8 @@ function AddressForm({ onSubmit, onCancel }: {
 
 export function ProfilePage() {
   const [showForm, setShowForm] = useState(false)
-  const { data, loading } = useQuery(GetMyAddressesDocument)
+  const accessToken = useAuthStore((s) => s.accessToken)
+  const { data, loading } = useQuery(GetMyAddressesDocument, { skip: !accessToken })
   const [addAddress] = useMutation(AddAddressDocument, refetchAddresses)
   const [removeAddress] = useMutation(RemoveAddressDocument, refetchAddresses)
   const [setDefaultAddress] = useMutation(SetDefaultAddressDocument, refetchAddresses)

@@ -1,14 +1,12 @@
 import { useQuery, useMutation } from '@apollo/client/react'
 import { AddToCartDocument, GetMyCartDocument, RemoveFromCartDocument, UpdateCartItemQuantityDocument } from '@react-monorepo/shared-graphql'
-
-// NestJS Lambda — inline input object with scalar vars (no named input types)
-
-// removeFromCart takes a direct arg, not an input object
+import { useAuthStore } from '@react-monorepo/shared-auth'
 
 const refetchCart = { refetchQueries: [{ query: GetMyCartDocument }] }
 
 export function useCart() {
-  const { data, loading } = useQuery(GetMyCartDocument)
+  const accessToken = useAuthStore((s) => s.accessToken)
+  const { data, loading } = useQuery(GetMyCartDocument, { skip: !accessToken })
   const [addToCartMutation] = useMutation(AddToCartDocument, refetchCart)
   const [removeFromCartMutation] = useMutation(RemoveFromCartDocument, refetchCart)
   const [updateCartItemMutation] = useMutation(UpdateCartItemQuantityDocument, refetchCart)

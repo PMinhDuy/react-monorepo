@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { useParams, Link } from 'react-router-dom'
 import { CancelMyOrderDocument, CreateCheckoutSessionFromDetailDocument, GetMyOrderDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Card, CardContent, Button } from '@react-monorepo/shared-ui'
 import { OrderStatusBadge } from '@react-monorepo/orders'
 import { ArrowLeft, XCircle } from 'lucide-react'
@@ -10,11 +11,12 @@ const CANCELLABLE = new Set(['PENDING', 'AWAITING_PAYMENT', 'CONFIRMED'])
 
 export function OrderDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const accessToken = useAuthStore((s) => s.accessToken)
   const [confirmOpen, setConfirmOpen] = useState(false)
   const [cancelError, setCancelError] = useState<string | null>(null)
   const { data, loading, error } = useQuery(GetMyOrderDocument, {
     variables: { id: id! },
-    skip: !id,
+    skip: !id || !accessToken,
   })
   const [cancelOrder, { loading: cancelling }] = useMutation(CancelMyOrderDocument, {
     refetchQueries: [{ query: GetMyOrderDocument, variables: { id: id! } }],

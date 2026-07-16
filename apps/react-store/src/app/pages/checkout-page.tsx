@@ -1,18 +1,18 @@
 import { useMutation, useQuery } from '@apollo/client/react'
 import { Link, useSearchParams } from 'react-router-dom'
 import { CreateCheckoutSessionDocument, MeForCheckoutDocument, PlaceOrderDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { useCart } from '@react-monorepo/orders'
 import { Button, Card, CardContent } from '@react-monorepo/shared-ui'
 import { useState, useEffect } from 'react'
 import { MapPin } from 'lucide-react'
 
-// placeOrder takes a direct shippingAddressId arg, not an input object
-
 export function CheckoutPage() {
   const { items, total } = useCart()
   const [searchParams] = useSearchParams()
+  const accessToken = useAuthStore((s) => s.accessToken)
   const wasCancelled = searchParams.get('cancelled') === 'true'
-  const { data: meData, loading: meLoading, error: meError } = useQuery(MeForCheckoutDocument)
+  const { data: meData, loading: meLoading, error: meError } = useQuery(MeForCheckoutDocument, { skip: !accessToken })
   const [placeOrder, { loading: placing }] = useMutation(PlaceOrderDocument)
   const [createCheckoutSession, { loading: redirecting }] = useMutation<
     { createCheckoutSession: string },

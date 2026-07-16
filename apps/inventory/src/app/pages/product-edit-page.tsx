@@ -1,18 +1,18 @@
 import { useParams, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@apollo/client/react'
 import { CreateProductDocument, GetProductForEditDocument, UpdateProductDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { ProductForm, type ProductFormData } from '@react-monorepo/catalog'
-
-// NestJS Lambda — inline input objects with scalar vars (no named input types)
 
 export function ProductEditPage() {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
+  const accessToken = useAuthStore((s) => s.accessToken)
   const isEdit = !!id
 
   const { data } = useQuery(GetProductForEditDocument, {
     variables: { id: id! },
-    skip: !isEdit,
+    skip: !isEdit || !accessToken,
   })
 
   const [createProduct, { loading: creating }] = useMutation(CreateProductDocument)

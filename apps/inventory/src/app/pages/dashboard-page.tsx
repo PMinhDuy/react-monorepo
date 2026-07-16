@@ -1,16 +1,18 @@
 import { useQuery } from '@apollo/client/react'
 import { GetDashboardStatsDocument, GetLowStockDashboardDocument, GetRecentOrdersDocument, GetRevenueChartDocument, GetTopProductsDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Card, CardContent } from '@react-monorepo/shared-ui'
 import { StatsCard, RevenueChart, TopProductsTable, OrderStatusPie } from '@react-monorepo/catalog'
 import { Link } from 'react-router-dom'
 import { DollarSign, ShoppingCart, Package, Clock, Users, AlertTriangle } from 'lucide-react'
 
 export function DashboardPage() {
-  const { data: statsData } = useQuery(GetDashboardStatsDocument)
-  const { data: chartData } = useQuery(GetRevenueChartDocument, { variables: { days: 30 } })
-  const { data: topData } = useQuery(GetTopProductsDocument, { variables: { limit: 5 } })
-  const { data: ordersData } = useQuery(GetRecentOrdersDocument, { variables: { limit: 10 } })
-  const { data: lowStockData } = useQuery(GetLowStockDashboardDocument)
+  const accessToken = useAuthStore((s) => s.accessToken)
+  const { data: statsData } = useQuery(GetDashboardStatsDocument, { skip: !accessToken })
+  const { data: chartData } = useQuery(GetRevenueChartDocument, { variables: { days: 30 }, skip: !accessToken })
+  const { data: topData } = useQuery(GetTopProductsDocument, { variables: { limit: 5 }, skip: !accessToken })
+  const { data: ordersData } = useQuery(GetRecentOrdersDocument, { variables: { limit: 10 }, skip: !accessToken })
+  const { data: lowStockData } = useQuery(GetLowStockDashboardDocument, { skip: !accessToken })
 
   const stats = statsData?.dashboardStats
   const revenueChart = chartData?.revenueChart ?? []

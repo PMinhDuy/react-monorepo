@@ -16,26 +16,54 @@ const authLink = setContext((_, { headers }) => {
   }
 })
 
+function notifyAuthTokens(accessToken: string, refreshToken: string) {
+  localStorage.setItem('access_token', accessToken)
+  localStorage.setItem('refresh_token', refreshToken)
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('auth:tokens-updated', { detail: { accessToken, refreshToken } }))
+  }
+}
+
+function notifyAuthCleared() {
+  localStorage.removeItem('access_token')
+  localStorage.removeItem('refresh_token')
+  localStorage.removeItem('user_id')
+  localStorage.removeItem('user_profile')
+  if (typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('auth:cleared'))
+  }
+}
+
 // Refresh access token via plain fetch to avoid Apollo loop
 async function refreshAccessToken(): Promise<string | null> {
   const token = localStorage.getItem('refresh_token')
-  if (!token) return null
+  if (!token) {
+    notifyAuthCleared()
+    return null
+  }
 
-  const res = await fetch(GRAPHQL_URL, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-      query: `mutation RefreshToken($token: String!) { refreshToken(token: $token) { accessToken refreshToken } }`,
-      variables: { token },
-    }),
-  })
-  const json = await res.json() as { data?: { refreshToken?: { accessToken: string; refreshToken: string } } }
-  const result = json.data?.refreshToken
-  if (!result) return null
+  try {
+    const res = await fetch(GRAPHQL_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        query: `mutation RefreshToken($token: String!) { refreshToken(token: $token) { accessToken refreshToken } }`,
+        variables: { token },
+      }),
+    })
+    const json = await res.json() as { data?: { refreshToken?: { accessToken: string; refreshToken: string } } }
+    const result = json.data?.refreshToken
+    if (!result) {
+      notifyAuthCleared()
+      return null
+    }
 
-  localStorage.setItem('access_token', result.accessToken)
-  localStorage.setItem('refresh_token', result.refreshToken)
-  return result.accessToken
+    notifyAuthTokens(result.accessToken, result.refreshToken)
+    return result.accessToken
+  } catch {
+    notifyAuthCleared()
+    return null
+  }
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -45,23 +73,31 @@ const errorLink = onError((errCtx: any) => {
   const isUnauthenticated = graphQLErrors?.some((e) => e.extensions?.['code'] === 'UNAUTHENTICATED')
   if (!isUnauthenticated) return
 
-  // Prevent infinite retry: if this operation already went through a refresh attempt, bail out
-  if (operation.getContext()['_refreshed']) return
+  // Prevent infinite retry loop
+  if (operation.getContext()['_refreshed']) {
+    notifyAuthCleared()
+    return
+  }
 
   return new Observable((observer) => {
-    refreshAccessToken().then((newToken) => {
-      if (!newToken) {
-        localStorage.removeItem('access_token')
-        localStorage.removeItem('refresh_token')
-        observer.error(graphQLErrors![0])
-        return
-      }
-      operation.setContext(({ headers = {} }: { headers: Record<string, string> }) => ({
-        headers: { ...headers, authorization: `Bearer ${newToken}` },
-        _refreshed: true,
-      }))
-      forward(operation).subscribe(observer)
-    }).catch((err: unknown) => observer.error(err))
+    refreshAccessToken()
+      .then((newToken) => {
+        if (!newToken) {
+          notifyAuthCleared()
+          observer.error(graphQLErrors?.[0] || new Error('Unauthenticated'))
+          return
+        }
+        operation.setContext(({ headers = {} }: { headers: Record<string, string> }) => ({
+          headers: { ...headers, authorization: `Bearer ${newToken}` },
+          _refreshed: true,
+        }))
+        const subscriber = forward(operation).subscribe(observer)
+        return () => subscriber.unsubscribe()
+      })
+      .catch((err: unknown) => {
+        notifyAuthCleared()
+        observer.error(err)
+      })
   })
 })
 

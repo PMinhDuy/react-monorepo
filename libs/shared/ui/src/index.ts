@@ -15,3 +15,5 @@ export {
 export { Navbar } from './lib/navbar'
 export { Pagination } from './lib/pagination'
 export { SeoHead } from './lib/seo-head'
+export { ProtectedRoute, RoleProtectedRoute } from './lib/protected-route'
+export type { ProtectedRouteProps } from './lib/protected-route'

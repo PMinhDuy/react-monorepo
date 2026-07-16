@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, Link, useSearchParams } from 'react-router-dom';
 import { useQuery, useApolloClient } from '@apollo/client/react';
 import { Button } from '@react-monorepo/shared-ui';
+import { useAuthStore } from '@react-monorepo/shared-auth';
 import {
   CheckCircle2,
   Package,
@@ -16,6 +17,7 @@ import { GetOrderForSuccessDocument } from '@react-monorepo/shared-graphql';
 export function OrderSuccessPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const [searchParams] = useSearchParams();
+  const accessToken = useAuthStore((s) => s.accessToken);
   const paidViaStripe = !!searchParams.get('session_id');
   const client = useApolloClient();
   const [timedOut, setTimedOut] = useState(false);
@@ -24,7 +26,7 @@ export function OrderSuccessPage() {
     myOrder: { id: string; status: string };
   }>(GetOrderForSuccessDocument, {
     variables: { id: orderId! },
-    skip: !orderId || !paidViaStripe,
+    skip: !orderId || !paidViaStripe || !accessToken,
   });
   const status = data?.myOrder?.status;
 

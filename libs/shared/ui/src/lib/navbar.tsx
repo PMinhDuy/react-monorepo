@@ -1,18 +1,17 @@
-import type { ReactNode } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { useAuthStore } from '@react-monorepo/shared-auth'
-import { Button } from './button'
-import { cn } from './utils'
-import { ShoppingBag } from 'lucide-react'
+import type { ReactNode } from 'react';
+import { Link, NavLink } from 'react-router-dom';
+import { useAuth } from '@react-monorepo/shared-auth';
+import { Button } from './button';
+import { cn } from './utils';
+import { ShoppingBag, User } from 'lucide-react';
 
 interface NavbarProps {
-  cartSlot?: ReactNode
-  wishlistSlot?: ReactNode
+  cartSlot?: ReactNode;
+  wishlistSlot?: ReactNode;
 }
 
 export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
-  const accessToken = useAuthStore((s) => s.accessToken)
-  const clearAuth = useAuthStore((s) => s.clearAuth)
+  const { isAuthenticated, user, logout } = useAuth();
 
   return (
     <header className="border-b bg-background/95 backdrop-blur-sm sticky top-0 z-40">
@@ -32,13 +31,13 @@ export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
                 'text-sm px-3 py-2 rounded-md transition-colors',
                 isActive
                   ? 'text-foreground font-medium'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
               )
             }
           >
             Products
           </NavLink>
-          {accessToken && (
+          {isAuthenticated && (
             <>
               <NavLink
                 to="/orders"
@@ -47,7 +46,7 @@ export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
                     'text-sm px-3 py-2 rounded-md transition-colors',
                     isActive
                       ? 'text-foreground font-medium'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   )
                 }
               >
@@ -60,7 +59,7 @@ export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
                     'text-sm px-3 py-2 rounded-md transition-colors',
                     isActive
                       ? 'text-foreground font-medium'
-                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50',
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
                   )
                 }
               >
@@ -70,17 +69,25 @@ export function Navbar({ cartSlot, wishlistSlot }: NavbarProps) {
           )}
           {wishlistSlot}
           {cartSlot}
-          {accessToken ? (
-            <Button variant="ghost" size="sm" onClick={clearAuth} className="ml-1">
-              Logout
-            </Button>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2 ml-2 pl-2 border-l">
+              <span className="text-xs text-muted-foreground hidden sm:inline-block">
+                {user?.name || user?.email}
+              </span>
+              <Button variant="ghost" size="sm" onClick={logout}>
+                Logout
+              </Button>
+            </div>
           ) : (
             <Link to="/login" className="ml-1">
-              <Button size="sm">Sign In</Button>
+              <Button size="sm">
+                <User className="h-4 w-4 mr-1.5" />
+                Sign In
+              </Button>
             </Link>
           )}
         </div>
       </nav>
     </header>
-  )
+  );
 }

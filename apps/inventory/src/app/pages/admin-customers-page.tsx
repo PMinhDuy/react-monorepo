@@ -1,16 +1,19 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client/react'
 import { GetCustomersDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Input } from '@react-monorepo/shared-ui'
 import { CustomerTable } from '@react-monorepo/catalog'
 import { Search, X } from 'lucide-react'
 
 export function AdminCustomersPage() {
+  const accessToken = useAuthStore((s) => s.accessToken)
   const [search, setSearch] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
 
   const { data, loading } = useQuery(GetCustomersDocument, {
     variables: { search: search || undefined, limit: 50, offset: 0 },
+    skip: !accessToken,
   })
 
   const customers = data?.customers ?? []

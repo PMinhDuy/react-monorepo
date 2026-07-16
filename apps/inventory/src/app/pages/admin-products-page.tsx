@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useQuery } from '@apollo/client/react'
 import { GetAdminProductsPageDocument } from '@react-monorepo/shared-graphql'
+import { useAuthStore } from '@react-monorepo/shared-auth'
 import { Button, Input, Pagination } from '@react-monorepo/shared-ui'
 import { Link } from 'react-router-dom'
 import { ProductTable } from '@react-monorepo/catalog'
@@ -9,12 +10,14 @@ import { Plus, Search, X } from 'lucide-react'
 const PAGE_SIZE = 20
 
 export function AdminProductsPage() {
+  const accessToken = useAuthStore((s) => s.accessToken)
   const [page, setPage] = useState(1)
   const [search, setSearch] = useState('')
   const [draftSearch, setDraftSearch] = useState('')
 
   const { data, refetch } = useQuery(GetAdminProductsPageDocument, {
     variables: { limit: PAGE_SIZE, offset: (page - 1) * PAGE_SIZE, search: search || undefined },
+    skip: !accessToken,
   })
 
   const products = data?.adminProducts.items ?? []

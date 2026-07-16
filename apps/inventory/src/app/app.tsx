@@ -1,5 +1,5 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { ProtectedRoute } from '@react-monorepo/shared-auth'
+import { ProtectedRoute } from '@react-monorepo/shared-ui'
 import { AdminLayout } from './layout/admin-layout'
 import { LoginPage } from './pages/login-page'
 import { DashboardPage } from './pages/dashboard-page'
@@ -15,7 +15,7 @@ export function App() {
     <Routes>
       <Route path="/login" element={<LoginPage />} />
 
-      <Route element={<ProtectedRoute />}>
+      <Route element={<ProtectedRoute allowedRoles={['ADMIN']} />}>
         <Route element={<AdminLayout />}>
           <Route index element={<Navigate to="/dashboard" replace />} />
           <Route path="/dashboard" element={<DashboardPage />} />

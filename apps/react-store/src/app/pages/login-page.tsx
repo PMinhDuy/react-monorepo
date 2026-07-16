@@ -1,13 +1,18 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useAuth, loginSchema, type LoginFormData } from '@react-monorepo/shared-auth'
 import { Button, Input, Label } from '@react-monorepo/shared-ui'
-import { ShoppingBag } from 'lucide-react'
+import { ShoppingBag, AlertCircle } from 'lucide-react'
 
 export function LoginPage() {
   const { login, loginLoading, loginError } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const locationState = location.state as { from?: Location; error?: string } | null
+  const redirectFrom = locationState?.from?.pathname || '/'
+  const routeError = locationState?.error
 
   const {
     register,
@@ -18,7 +23,7 @@ export function LoginPage() {
   const onSubmit = async (data: LoginFormData) => {
     try {
       await login(data.email, data.password)
-      navigate('/')
+      navigate(redirectFrom, { replace: true })
     } catch {
       // loginError handles display
     }
@@ -35,6 +40,13 @@ export function LoginPage() {
           <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
           <p className="text-sm text-muted-foreground">Sign in to your account to continue</p>
         </div>
+
+        {routeError && (
+          <div className="flex items-center gap-2 text-sm text-amber-600 bg-amber-50 dark:bg-amber-950/30 dark:text-amber-400 p-3 rounded-lg border border-amber-200 dark:border-amber-900/50">
+            <AlertCircle className="h-4 w-4 shrink-0" />
+            <span>{routeError}</span>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div className="space-y-1.5">

@@ -1,27 +1,29 @@
-import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
-
-import App from './app';
+import { render } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
+import { ApolloProvider } from '@apollo/client/react'
+import { apolloClient } from '@react-monorepo/shared-graphql'
+import App from './app'
 
 describe('App', () => {
   it('should render successfully', () => {
     const { baseElement } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
-    expect(baseElement).toBeTruthy();
-  });
+      <ApolloProvider client={apolloClient}>
+        <MemoryRouter initialEntries={['/']}>
+          <App />
+        </MemoryRouter>
+      </ApolloProvider>,
+    )
+    expect(baseElement).toBeTruthy()
+  })
 
-  it('should have a greeting as the title', () => {
+  it('should render the Store header', () => {
     const { getAllByText } = render(
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    );
-    expect(
-      getAllByText(new RegExp('Welcome @react-monorepo/react-store', 'gi'))
-        .length > 0
-    ).toBeTruthy();
-  });
-});
+      <ApolloProvider client={apolloClient}>
+        <MemoryRouter initialEntries={['/']}>
+          <App />
+        </MemoryRouter>
+      </ApolloProvider>,
+    )
+    expect(getAllByText(/Store/i).length).toBeGreaterThan(0)
+  })
+})
